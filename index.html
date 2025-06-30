@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ajude o Leo a Comprar Sua Guitarra!</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://i.imgur.com/v0yDkAe.jpg') no-repeat center center/cover;
+      color: white;
+      text-shadow: 1px 1px 5px black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .pix {
+      background: #1db954;
+      color: white;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .contador {
+      font-size: 1.5rem;
+      margin-top: 10px;
+    }
+    input[type="number"] {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      width: 100%;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 10px;
+      background-color: #00ff88;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #00cc66;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ajude o Leo a Realizar Seu Sonho!</h1>
+    <p>Meu nome é Leandro Fernandes da Silva, mas pode me chamar de Leo. Estou lutando para realizar um grande sonho: comprar minha guitarra verde brilhante! Em nome de Jesus, eu vou conseguir — e você pode fazer parte disso!</p>
+    <div class="pix">Doe via Pix: <br><strong>21 97651-6465</strong></div>
+
+    <div>
+      <label for="doado">Quanto você doou? (em R$)</label>
+      <input type="number" id="doado" placeholder="Digite aqui...">
+      <button onclick="adicionarDoacao()">Adicionar ao contador</button>
+    </div>
+
+    <div class="contador">
+      Total arrecadado: R$ <span id="total">0</span> / R$ 1.500
+    </div>
+  </div>
+
+  <script>
+    let total = 0;
+    function adicionarDoacao() {
+      const valor = parseFloat(document.getElementById('doado').value);
+      if (!isNaN(valor) && valor > 0) {
+        total += valor;
+        document.getElementById('total').textContent = total.toFixed(2);
+        document.getElementById('doado').value = '';
+      }
+    }
+  </script>
+</body>
+</html>
