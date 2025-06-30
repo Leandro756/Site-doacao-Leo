@@ -15,7 +15,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       padding: 20px;
       box-sizing: border-box;
     }
@@ -42,11 +42,36 @@
       padding: 10px;
       border-radius: 10px;
       font-size: 1.2rem;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+    }
+    .pix button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      background: #00ff88;
+      color: black;
+      cursor: pointer;
+    }
+    .pix button:hover {
+      background: #00cc66;
     }
     .contador {
       font-size: 1.5rem;
       margin-top: 10px;
+    }
+    .barra {
+      background: #333;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 20px;
+      margin-top: 10px;
+    }
+    .progresso {
+      height: 100%;
+      background: #00ff88;
+      width: 0%;
+      transition: width 0.5s ease;
     }
     input[type="number"] {
       padding: 10px;
@@ -67,13 +92,30 @@
     button:hover {
       background-color: #00cc66;
     }
+    .whatsapp {
+      margin-top: 20px;
+      display: inline-block;
+      background: #25d366;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .whatsapp:hover {
+      background: #1ebe5d;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Ajude o Leo a Realizar Seu Sonho!</h1>
     <p>Meu nome é Leandro Fernandes da Silva, mas pode me chamar de Leo. Estou lutando para realizar um grande sonho: comprar minha guitarra verde brilhante! Em nome de Jesus, eu vou conseguir — e você pode fazer parte disso!</p>
-    <div class="pix">Doe via Pix: <br><strong>21 97651-6465</strong></div>
+
+    <div class="pix">
+      Doe via Pix:<br><strong id="chavePix">21 97651-6465</strong><br>
+      <button onclick="copiarPix()">Copiar chave Pix</button>
+    </div>
 
     <div>
       <label for="doado">Quanto você doou? (em R$)</label>
@@ -83,18 +125,40 @@
 
     <div class="contador">
       Total arrecadado: R$ <span id="total">0</span> / R$ 1.500
+      <div class="barra"><div id="progresso" class="progresso"></div></div>
     </div>
+
+    <a class="whatsapp" href="https://wa.me/?text=Ajude%20o%20Leo%20a%20realizar%20seu%20sonho%20de%20ter%20uma%20guitarra!%20Doe%20via%20Pix%3A%2021%2097651-6465%20ou%20acesse%20o%20site%3A%20https%3A%2F%2Fleandro756.github.io%2FSite-doacao-Leo%2F" target="_blank">
+      Compartilhar no WhatsApp
+    </a>
   </div>
 
   <script>
     let total = 0;
+    const meta = 1500;
+
     function adicionarDoacao() {
       const valor = parseFloat(document.getElementById('doado').value);
       if (!isNaN(valor) && valor > 0) {
         total += valor;
         document.getElementById('total').textContent = total.toFixed(2);
+        atualizarBarra();
         document.getElementById('doado').value = '';
       }
+    }
+
+    function atualizarBarra() {
+      const percentual = Math.min((total / meta) * 100, 100);
+      document.getElementById('progresso').style.width = percentual + '%';
+    }
+
+    function copiarPix() {
+      const chave = document.getElementById("chavePix").textContent;
+      navigator.clipboard.writeText(chave).then(function() {
+        alert("Chave Pix copiada!");
+      }, function(err) {
+        alert("Erro ao copiar a chave Pix.");
+      });
     }
   </script>
 </body>
