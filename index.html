@@ -13,16 +13,28 @@
       padding: 0;
     }
     header {
-      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Rio_de_Janeiro_-_Christ_the_Redeemer_Illustration.jpg/1280px-Rio_de_Janeiro_-_Christ_the_Redeemer_Illustration.jpg');
-      background-size: cover;
-      background-position: center;
-      height: 250px;
+      position: relative;
+      background-color: #1a1a1a;
+      height: 300px;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
+    }
+    header img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.3;
+      z-index: 0;
     }
     header h1 {
-      background: rgba(0, 0, 0, 0.5);
+      position: relative;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.6);
       padding: 10px 20px;
       border-radius: 10px;
       font-size: 2rem;
@@ -106,6 +118,7 @@
 </head>
 <body>
   <header>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Cristo_Redentor_-_Rio_de_Janeiro%2C_Brasil.jpg/1024px-Cristo_Redentor_-_Rio_de_Janeiro%2C_Brasil.jpg" alt="Cristo Redentor">
     <h1>Seja Bem Carioca!</h1>
   </header>  <p class="subtitulo">Feira Cultural<br>– 901 –</p>  <h2>Seja Bem-Vindo</h2>  <img class="decoracao" src="https://i.pinimg.com/originals/c1/bf/5e/c1bf5eeaa4ff5385a6b296ce7d46c7bc.png" alt="Decorativo">  <div class="texto">
     Nossa turma é estudiosa, criativa e cheia de energia! Criamos este espaço para receber doações para nossa formatura. Cada contribuição é um passo rumo ao nosso sonho. <br><br>
