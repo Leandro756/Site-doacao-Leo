@@ -1,165 +1,147 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html><html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ajude o Leo a Comprar Sua Guitarra!</title>
+  <title>Feira Cultural - 901</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: url('https://i.imgur.com/v0yDkAe.jpg') no-repeat center center/cover;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1a1a1a;
       color: white;
-      text-shadow: 1px 1px 5px black;
+      text-align: center;
+      padding: 0;
+    }
+    header {
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Rio_de_Janeiro_-_Christ_the_Redeemer_Illustration.jpg/1280px-Rio_de_Janeiro_-_Christ_the_Redeemer_Illustration.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 250px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-      box-sizing: border-box;
     }
-    .container {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 30px;
-      border-radius: 20px;
-      max-width: 500px;
-      width: 100%;
-      text-align: center;
-    }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-    p {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-    }
-    .pix {
-      background: #1db954;
-      color: white;
-      font-weight: bold;
-      padding: 10px;
+    header h1 {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
       border-radius: 10px;
+      font-size: 2rem;
+    }
+    .subtitulo {
       font-size: 1.2rem;
-      margin-bottom: 10px;
-    }
-    .pix button {
       margin-top: 10px;
-      padding: 5px 10px;
+    }
+    h2 {
+      margin-top: 20px;
+      font-size: 2rem;
+    }
+    .texto {
+      margin: 20px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+    .decoracao {
+      max-width: 100px;
+      position: absolute;
+      right: 10px;
+      top: 270px;
+    }
+    .botao-pix {
+      background-color: #006400;
+      color: white;
+      padding: 15px 30px;
+      font-size: 1.2rem;
       border: none;
-      border-radius: 5px;
-      background: #00ff88;
-      color: black;
+      border-radius: 10px;
       cursor: pointer;
+      margin-top: 20px;
     }
-    .pix button:hover {
-      background: #00cc66;
+    .botao-pix:hover {
+      background-color: #009900;
     }
-    .contador {
-      font-size: 1.5rem;
-      margin-top: 10px;
+    .progresso-container {
+      width: 90%;
+      max-width: 500px;
+      margin: 30px auto;
     }
     .barra {
       background: #333;
-      border-radius: 20px;
+      height: 30px;
+      border-radius: 15px;
       overflow: hidden;
-      height: 20px;
-      margin-top: 10px;
     }
-    .progresso {
+    .barra-interna {
+      background: #00cc66;
       height: 100%;
-      background: #00ff88;
       width: 0%;
-      transition: width 0.5s ease;
+      transition: width 0.5s;
     }
-    input[type="number"] {
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      width: 100%;
-      margin-top: 10px;
+    .valores {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-top: 5px;
     }
-    button {
-      margin-top: 10px;
-      background-color: #00ff88;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #00cc66;
-    }
-    .whatsapp {
+    .input-doacao {
       margin-top: 20px;
-      display: inline-block;
-      background: #25d366;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
     }
-    .whatsapp:hover {
-      background: #1ebe5d;
+    .input-doacao input {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: none;
+      width: 200px;
+    }
+    .input-doacao button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      background-color: #00cc66;
+      color: black;
+      cursor: pointer;
+      margin-left: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Ajude o Leo a Realizar Seu Sonho!</h1>
-    <p>Meu nome é Leandro Fernandes da Silva, mas pode me chamar de Leo. Estou lutando para realizar um grande sonho: comprar minha guitarra verde brilhante! Em nome de Jesus, eu vou conseguir — e você pode fazer parte disso!</p>
+  <header>
+    <h1>Seja Bem Carioca!</h1>
+  </header>  <p class="subtitulo">Feira Cultural<br>– 901 –</p>  <h2>Seja Bem-Vindo</h2>  <img class="decoracao" src="https://i.pinimg.com/originals/c1/bf/5e/c1bf5eeaa4ff5385a6b296ce7d46c7bc.png" alt="Decorativo">  <div class="texto">
+    Nossa turma é estudiosa, criativa e cheia de energia! Criamos este espaço para receber doações para nossa formatura. Cada contribuição é um passo rumo ao nosso sonho. <br><br>
+    <strong>Em nome de Jesus, vamos conseguir!</strong><br><br>
+    Agradecemos de coração a todos que estão fazendo parte dessa jornada. 💚
+  </div><button class="botao-pix" onclick="copiarPix()">Fazer parte disso</button>
 
-    <div class="pix">
-      Doe via Pix:<br><strong id="chavePix">21 97651-6465</strong><br>
-      <button onclick="copiarPix()">Copiar chave Pix</button>
+  <div class="progresso-container">
+    <div class="barra">
+      <div id="progresso" class="barra-interna"></div>
     </div>
-
-    <div>
-      <label for="doado">Quanto você doou? (em R$)</label>
-      <input type="number" id="doado" placeholder="Digite aqui...">
-      <button onclick="adicionarDoacao()">Adicionar ao contador</button>
+    <div class="valores">
+      <span>R$0</span>
+      <span>R$100</span>
     </div>
-
-    <div class="contador">
-      Total arrecadado: R$ <span id="total">0</span> / R$ 1.500
-      <div class="barra"><div id="progresso" class="progresso"></div></div>
+    <div class="input-doacao">
+      <input type="number" id="valor" placeholder="Quanto você doou?" />
+      <button onclick="atualizarProgresso()">Atualizar</button>
     </div>
-
-    <a class="whatsapp" href="https://wa.me/?text=Ajude%20o%20Leo%20a%20realizar%20seu%20sonho%20de%20ter%20uma%20guitarra!%20Doe%20via%20Pix%3A%2021%2097651-6465%20ou%20acesse%20o%20site%3A%20https%3A%2F%2Fleandro756.github.io%2FSite-doacao-Leo%2F" target="_blank">
-      Compartilhar no WhatsApp
-    </a>
-  </div>
-
-  <script>
-    let total = 0;
-    const meta = 1500;
-
-    function adicionarDoacao() {
-      const valor = parseFloat(document.getElementById('doado').value);
-      if (!isNaN(valor) && valor > 0) {
-        total += valor;
-        document.getElementById('total').textContent = total.toFixed(2);
-        atualizarBarra();
-        document.getElementById('doado').value = '';
-      }
-    }
-
-    function atualizarBarra() {
-      const percentual = Math.min((total / meta) * 100, 100);
-      document.getElementById('progresso').style.width = percentual + '%';
-    }
+  </div>  <script>
+    const pix = "21 97651-6465";
 
     function copiarPix() {
-      const chave = document.getElementById("chavePix").textContent;
-      navigator.clipboard.writeText(chave).then(function() {
-        alert("Chave Pix copiada!");
-      }, function(err) {
-        alert("Erro ao copiar a chave Pix.");
+      navigator.clipboard.writeText(pix).then(() => {
+        alert("Chave Pix copiada com sucesso! \nUse no app do seu banco: " + pix);
       });
     }
-  </script>
-</body>
+
+    function atualizarProgresso() {
+      const valor = parseFloat(document.getElementById("valor").value);
+      if (!isNaN(valor) && valor >= 0 && valor <= 100) {
+        const porcentagem = (valor / 100) * 100;
+        document.getElementById("progresso").style.width = porcentagem + "%";
+      } else {
+        alert("Digite um valor entre 0 e 100 reais.");
+      }
+    }
+  </script></body>
 </html>
