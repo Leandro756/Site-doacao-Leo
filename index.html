@@ -42,12 +42,6 @@
       font-size: 1.1rem;
       line-height: 1.5;
     }
-    .decoracao {
-      max-width: 100px;
-      position: absolute;
-      right: 10px;
-      top: 270px;
-    }
     .botao-pix {
       background-color: #006400;
       color: white;
@@ -107,15 +101,12 @@
     .qr-container {
       margin-top: 30px;
     }
-    audio {
-      margin-top: 20px;
-    }
   </style>
 </head>
 <body>
   <header>
     <h1>Seja Bem Carioca!</h1>
-  </header>  <p class="subtitulo">Feira Cultural<br>– 901 –</p>  <h2>Seja Bem-Vindo</h2>  <img class="decoracao" src="https://i.pinimg.com/originals/c1/bf/5e/c1bf5eeaa4ff5385a6b296ce7d46c7bc.png" alt="Decorativo">  <div class="texto">
+  </header>  <p class="subtitulo">Feira Cultural<br>– 901 –</p>  <h2>Seja Bem-Vindo</h2>  <div class="texto">
     Nossa turma é estudiosa, criativa e cheia de energia! Criamos este espaço para receber doações para nossa formatura. Cada contribuição é um passo rumo ao nosso sonho. <br><br>
     <strong>Em nome de Jesus, vamos conseguir!</strong><br><br>
     Agradecemos de coração a todos que estão fazendo parte dessa jornada. 💚
@@ -136,10 +127,7 @@
       <input type="number" id="valor" placeholder="Quanto você doou?" />
       <button onclick="atualizarProgresso()">Atualizar</button>
     </div>
-  </div>  <audio id="bgAudio" autoplay loop controls>
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_b0a1ce0b37.mp3" type="audio/mpeg">
-    Seu navegador não suporta áudio.
-  </audio>  <script>
+  </div>  <script>
     const pix = "21 97651-6465";
 
     function copiarPix() {
