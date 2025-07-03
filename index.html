@@ -106,65 +106,6 @@ carregarMensagens();
       font-size: 1.1rem;
       line-height: 1.5;
     }
-    .botao-pix {
-      background-color: #006400;
-      color: white;
-      padding: 15px 30px;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    .botao-pix:hover {
-      background-color: #009900;
-    }
-    .progresso-container {
-      width: 90%;
-      max-width: 500px;
-      margin: 30px auto;
-    }
-    .barra {
-      background: #333;
-      height: 30px;
-      border-radius: 15px;
-      overflow: hidden;
-    }
-    .barra-interna {
-      background: #00cc66;
-      height: 100%;
-      width: 0%;
-      transition: width 0.5s;
-    }
-    .valores {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      margin-top: 5px;
-    }
-    .input-doacao {
-      margin-top: 20px;
-    }
-    .input-doacao input {
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: none;
-      width: 200px;
-    }
-    .input-doacao button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
-      background-color: #00cc66;
-      color: black;
-      cursor: pointer;
-      margin-left: 10px;
-    }
-    .qr-container {
-      margin-top: 30px;
-    }
     .mural {
       margin: 50px auto;
       max-width: 600px;
@@ -232,47 +173,15 @@ carregarMensagens();
   <header>
     <h1>Seja Bem Carioca!</h1>
   </header>  <p class="subtitulo">Feira Cultural<br>– 901 –</p>  <h2>Seja Bem-Vindo</h2>  <div class="texto">
-    Nossa turma é estudiosa, criativa e cheia de energia! Criamos este espaço para receber doações para nossa formatura. Cada contribuição é um passo rumo ao nosso sonho. <br><br>
+    Nossa turma é estudiosa, criativa e cheia de energia! Criamos este espaço para compartilhar mensagens de motivação durante nossa Feira Cultural. <br><br>
     <strong>Em nome de Jesus, vamos conseguir!</strong><br><br>
     Agradecemos de coração a todos que estão fazendo parte dessa jornada. 💚
-  </div><button class="botao-pix" onclick="copiarPix()">Fazer parte disso</button>
-
-  <div class="qr-container">
-    <h3>Ou escaneie nosso QR Code do Pix:</h3>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?data=21%2097651-6465&size=200x200" alt="QR Code Pix">
-  </div>  <div class="progresso-container">
-    <div class="barra">
-      <div id="progresso" class="barra-interna"></div>
-    </div>
-    <div class="valores">
-      <span>R$0</span>
-      <span>R$100</span>
-    </div>
-    <div class="input-doacao">
-      <input type="number" id="valor" placeholder="Quanto você doou?" />
-      <button onclick="atualizarProgresso()">Atualizar</button>
-    </div>
   </div>  <div class="mural">
     <h3>Mural de Animação 💬</h3>
     <input type="text" id="nome" placeholder="Seu nome">
     <input type="text" id="mensagem" placeholder="Sua mensagem">
     <button onclick="enviarMensagem()">Enviar</button>
     <div class="mensagens" id="mensagens"></div>
-  </div>  <script>
-    const pix = "21 97651-6465";
-    function copiarPix() {
-      navigator.clipboard.writeText(pix).then(() => {
-        alert("Chave Pix copiada com sucesso! \nUse no app do seu banco: " + pix);
-      });
-    }
-    function atualizarProgresso() {
-      const valor = parseFloat(document.getElementById("valor").value);
-      if (!isNaN(valor) && valor >= 0 && valor <= 100) {
-        const porcentagem = (valor / 100) * 100;
-        document.getElementById("progresso").style.width = porcentagem + "%";
-      } else {
-        alert("Digite um valor entre 0 e 100 reais.");
-      }
-    }
-  </script></body>
+  </div>
+</body>
 </html>
