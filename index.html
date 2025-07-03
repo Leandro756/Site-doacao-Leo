@@ -3,6 +3,57 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feira Cultural - 901</title>
+  <script type="module">
+    // Importa os módulos do Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";const firebaseConfig = {
+  apiKey: "AIzaSyBthtSWTasL2WjQk0SFx57rJOaxpDJsR2M",
+  authDomain: "site-doacao-leo.firebaseapp.com",
+  projectId: "site-doacao-leo",
+  storageBucket: "site-doacao-leo.firebasestorage.app",
+  messagingSenderId: "206208964375",
+  appId: "1:206208964375:web:10ade79ddd031f6a4ac952",
+  measurementId: "G-13DY56HT5X"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function carregarMensagens() {
+  const mural = document.getElementById("mensagens");
+  mural.innerHTML = "Carregando mensagens...";
+  const q = query(collection(db, "mensagens"), orderBy("timestamp", "desc"));
+  const querySnapshot = await getDocs(q);
+  mural.innerHTML = "";
+  querySnapshot.forEach((doc) => {
+    const msg = doc.data();
+    const div = document.createElement("div");
+    div.className = "mensagem";
+    div.innerHTML = `<strong>${msg.nome}:</strong> ${msg.texto}`;
+    mural.appendChild(div);
+  });
+}
+
+window.enviarMensagem = async function() {
+  const nome = document.getElementById("nome").value.trim();
+  const texto = document.getElementById("mensagem").value.trim();
+  if (nome && texto) {
+    await addDoc(collection(db, "mensagens"), {
+      nome,
+      texto,
+      timestamp: serverTimestamp()
+    });
+    document.getElementById("nome").value = "";
+    document.getElementById("mensagem").value = "";
+    carregarMensagens();
+  } else {
+    alert("Preencha seu nome e uma mensagem!");
+  }
+}
+
+carregarMensagens();
+
+  </script>
   <style>
     body {
       margin: 0;
@@ -101,6 +152,43 @@
     .qr-container {
       margin-top: 30px;
     }
+    .mural {
+      margin: 50px auto;
+      max-width: 600px;
+      padding: 20px;
+      background-color: #2a2a2a;
+      border-radius: 15px;
+    }
+    .mural h3 {
+      color: #00cc66;
+      margin-bottom: 10px;
+    }
+    .mural input {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+    }
+    .mural button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #00cc66;
+      color: black;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .mensagens {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .mensagem {
+      background: #444;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 5px 0;
+    }
   </style>
 </head>
 <body>
@@ -127,6 +215,12 @@
       <input type="number" id="valor" placeholder="Quanto você doou?" />
       <button onclick="atualizarProgresso()">Atualizar</button>
     </div>
+  </div>  <div class="mural">
+    <h3>Mural de Animação 💬</h3>
+    <input type="text" id="nome" placeholder="Seu nome">
+    <input type="text" id="mensagem" placeholder="Sua mensagem">
+    <button onclick="enviarMensagem()">Enviar</button>
+    <div class="mensagens" id="mensagens"></div>
   </div>  <script>
     const pix = "21 97651-6465";
 
