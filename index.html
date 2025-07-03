@@ -4,7 +4,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Feira Cultural - 901</title>
   <script type="module">
-    // Importa os módulos do Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";const firebaseConfig = {
   apiKey: "AIzaSyBthtSWTasL2WjQk0SFx57rJOaxpDJsR2M",
@@ -19,22 +18,39 @@
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+function aplicarEmojis(texto) {
+  return texto
+    .replace(/\bfé\b/gi, "fé 🙏")
+    .replace(/\bforça\b/gi, "força 💪")
+    .replace(/\bamor\b/gi, "amor ❤️")
+    .replace(/\besperança\b/gi, "esperança 💚")
+    .replace(/\bcarinho\b/gi, "carinho 💝");
+}
+
+function corAleatoria() {
+  const cores = ["#222", "#2e4d3b", "#3a3a5c", "#4d2e2e", "#444", "#2f3d4c"];
+  return cores[Math.floor(Math.random() * cores.length)];
+}
+
 async function carregarMensagens() {
   const mural = document.getElementById("mensagens");
-  mural.innerHTML = "Carregando mensagens...";
+  mural.innerHTML = "";
   const q = query(collection(db, "mensagens"), orderBy("timestamp", "desc"));
   const querySnapshot = await getDocs(q);
-  mural.innerHTML = "";
   querySnapshot.forEach((doc) => {
     const msg = doc.data();
     const div = document.createElement("div");
-    div.className = "mensagem";
-    div.innerHTML = `<strong>${msg.nome}:</strong> ${msg.texto}`;
+    div.className = "mensagem animar";
+    const corFundo = corAleatoria();
+    const inicial = msg.nome.charAt(0).toUpperCase();
+    const textoFormatado = aplicarEmojis(msg.texto);
+    div.style.backgroundColor = corFundo;
+    div.innerHTML = `<div class='avatar'>${inicial}</div><div><strong>${msg.nome}:</strong> ${textoFormatado}</div>`;
     mural.appendChild(div);
   });
 }
 
-window.enviarMensagem = async function() {
+window.enviarMensagem = async function () {
   const nome = document.getElementById("nome").value.trim();
   const texto = document.getElementById("mensagem").value.trim();
   if (nome && texto) {
@@ -64,7 +80,6 @@ carregarMensagens();
       padding: 0;
     }
     header {
-      position: relative;
       background-color: rgba(255, 104, 41, 1);
       height: 300px;
       display: flex;
@@ -73,8 +88,6 @@ carregarMensagens();
       flex-direction: column;
     }
     header h1 {
-      position: relative;
-      z-index: 1;
       background: rgba(0, 0, 0, 0.6);
       padding: 10px 20px;
       border-radius: 10px;
@@ -184,10 +197,34 @@ carregarMensagens();
       text-align: left;
     }
     .mensagem {
-      background: #444;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 10px;
       border-radius: 10px;
-      margin: 5px 0;
+      margin: 8px 0;
+      animation: aparecer 0.6s ease-out;
+    }
+    .avatar {
+      background-color: #00cc66;
+      color: black;
+      font-weight: bold;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
@@ -223,13 +260,11 @@ carregarMensagens();
     <div class="mensagens" id="mensagens"></div>
   </div>  <script>
     const pix = "21 97651-6465";
-
     function copiarPix() {
       navigator.clipboard.writeText(pix).then(() => {
         alert("Chave Pix copiada com sucesso! \nUse no app do seu banco: " + pix);
       });
     }
-
     function atualizarProgresso() {
       const valor = parseFloat(document.getElementById("valor").value);
       if (!isNaN(valor) && valor >= 0 && valor <= 100) {
