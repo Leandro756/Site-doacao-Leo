@@ -5,7 +5,7 @@
   <title>Feira Cultural - 901</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";const firebaseConfig = {
+    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy, doc, onSnapshot, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";const firebaseConfig = {
   apiKey: "AIzaSyBthtSWTasL2WjQk0SFx57rJOaxpDJsR2M",
   authDomain: "site-doacao-leo.firebaseapp.com",
   projectId: "site-doacao-leo",
@@ -17,6 +17,20 @@
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// Contador de usuários online
+const onlineRef = collection(db, "online");
+const sessionId = Date.now() + "_" + Math.random().toString(36).substring(2);
+const userDoc = doc(onlineRef, sessionId);
+await setDoc(userDoc, { timestamp: serverTimestamp() });
+window.addEventListener("beforeunload", () => deleteDoc(userDoc));
+
+function atualizarContador(snapshot) {
+  const contador = document.getElementById("contador-usuarios");
+  contador.textContent = `👤 ${snapshot.size}`;
+}
+
+onSnapshot(onlineRef, atualizarContador);
 
 function aplicarEmojis(texto) {
   return texto
@@ -78,6 +92,17 @@ carregarMensagens();
       color: white;
       text-align: center;
       padding: 0;
+    }
+    #contador-usuarios {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: #00cc66;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #1a1a1a;
     }
     header {
       background-color: rgba(255, 104, 41, 1);
@@ -148,7 +173,7 @@ carregarMensagens();
     }
     .avatar {
       background-color: #00cc66;
-      color: black;
+      color: #1a1a1a;
       font-weight: bold;
       border-radius: 50%;
       width: 35px;
@@ -170,6 +195,7 @@ carregarMensagens();
   </style>
 </head>
 <body>
+  <div id="contador-usuarios">👤 0</div>
   <header>
     <h1>Seja Bem Carioca!</h1>
   </header>  <p class="subtitulo">Feira Cultural<br>– 901 –</p>  <h2>Seja Bem-Vindo</h2>  <div class="texto">
