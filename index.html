@@ -1,207 +1,164 @@
-<!DOCTYPE html><html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feira Cultural - 901</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";const firebaseConfig = {
-  apiKey: "AIzaSyBthtSWTasL2WjQk0SFx57rJOaxpDJsR2M",
-  authDomain: "site-doacao-leo.firebaseapp.com",
-  projectId: "site-doacao-leo",
-  storageBucket: "site-doacao-leo.firebasestorage.app",
-  messagingSenderId: "206208964375",
-  appId: "1:206208964375:web:10ade79ddd031f6a4ac952",
-  measurementId: "G-13DY56HT5X"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-function aplicarEmojis(texto) {
-  return texto
-    .replace(/\bfé\b/gi, "fé 🙏")
-    .replace(/\bforça\b/gi, "força 💪")
-    .replace(/\bamor\b/gi, "amor ❤️")
-    .replace(/\besperança\b/gi, "esperança 💚")
-    .replace(/\bcarinho\b/gi, "carinho 💝");
-}
-
-function corAleatoria() {
-  const cores = ["#222", "#2e4d3b", "#3a3a5c", "#4d2e2e", "#444", "#2f3d4c"];
-  return cores[Math.floor(Math.random() * cores.length)];
-}
-
-function emojiAleatorio() {
-  const emojis = ["😄", "🌟", "🎉", "✨", "💫", "😎", "🔥", "💚", "🥰", "💪🏽"];
-  return emojis[Math.floor(Math.random() * emojis.length)];
-}
-
-async function carregarMensagens() {
-  const mural = document.getElementById("mensagens");
-  mural.innerHTML = "";
-  const q = query(collection(db, "mensagens"), orderBy("timestamp", "desc"));
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    const msg = doc.data();
-    const div = document.createElement("div");
-    div.className = "mensagem animar";
-    const corFundo = corAleatoria();
-    const emoji = emojiAleatorio();
-    const textoFormatado = aplicarEmojis(msg.texto);
-    div.style.backgroundColor = corFundo;
-    div.innerHTML = `<div class='avatar'>${emoji}</div><div><strong>${msg.nome}:</strong> ${textoFormatado}</div>`;
-    mural.appendChild(div);
-  });
-}
-
-window.enviarMensagem = async function () {
-  const nome = document.getElementById("nome").value.trim();
-  const texto = document.getElementById("mensagem").value.trim();
-  if (nome && texto) {
-    await addDoc(collection(db, "mensagens"), {
-      nome,
-      texto,
-      timestamp: serverTimestamp()
-    });
-    document.getElementById("nome").value = "";
-    document.getElementById("mensagem").value = "";
-    const obrigado = document.getElementById("obrigado");
-    obrigado.style.display = "block";
-    setTimeout(() => obrigado.style.display = "none", 4000);
-    carregarMensagens();
-  } else {
-    alert("Preencha seu nome e uma mensagem!");
-  }
-}
-
-carregarMensagens();
-
-  </script>
+  <title>Feira Cultural 901</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #1a1a1a;
+      font-family: 'Comic Sans MS', cursive;
+      background-color: #1c1c1c;
       color: white;
       text-align: center;
-      padding: 0;
     }
-    header {
-      background-color: rgba(255, 104, 41, 1);
-      height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
+
+    .top-banner {
+      background-color: rgb(255, 104, 41);
+      padding: 40px 20px;
     }
-    header h1 {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 2rem;
-    }
-    .subtitulo {
-      font-size: 1.2rem;
-      margin-top: 10px;
-    }
-    h2 {
-      margin-top: 20px;
-      font-size: 2rem;
-    }
-    .texto {
-      margin: 20px;
-      font-size: 1.1rem;
-      line-height: 1.5;
-    }
-    .mural {
-      margin: 50px auto;
-      max-width: 600px;
-      padding: 20px;
-      background-color: #2a2a2a;
+
+    .top-banner h1 {
+      background-color: #4b2b1d;
+      display: inline-block;
+      padding: 15px 30px;
       border-radius: 15px;
+      font-size: 2em;
     }
-    .mural h3 {
-      color: #00cc66;
-      margin-bottom: 10px;
+
+    .section {
+      padding: 40px 20px;
     }
-    .mural input {
-      padding: 10px;
-      margin: 5px;
-      border-radius: 10px;
-      border: none;
-      font-size: 1rem;
+
+    .section h2 {
+      font-size: 2.5em;
     }
-    .mural button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background-color: #00cc66;
-      color: black;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .mensagens {
-      margin-top: 20px;
+
+    .mural {
+      margin: 40px auto;
+      max-width: 600px;
       text-align: left;
     }
-    .mensagem {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
+
+    .mural-message {
+      background-color: #333;
+      padding: 15px;
+      margin: 10px 0;
       border-radius: 10px;
-      margin: 8px 0;
-      animation: aparecer 0.6s ease-out;
+      animation: fadeIn 0.5s ease-in;
     }
-    .avatar {
-      background-color: #00cc66;
-      color: #1a1a1a;
-      font-weight: bold;
-      border-radius: 50%;
-      width: 35px;
-      height: 35px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .obrigado {
-      display: none;
+
+    .formulario {
+      margin: 40px auto;
+      max-width: 600px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin: 10px 0;
+    }
+
+    button {
+      background-color: #006400;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    .turma-img {
+      margin-top: 60px;
+    }
+
+    .turma-img img {
+      width: 90%;
+      max-width: 600px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    }
+
+    .turma-img h3 {
       margin-top: 10px;
-      color: #00cc66;
-      font-weight: bold;
-    }
-    .mural button:hover {
-      background-color: #00994d;
-      transition: 0.3s;
-      box-shadow: 0 0 10px #00cc66aa;
-    }
-    @keyframes aparecer {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      color: #006400;
     }
   </style>
 </head>
 <body>
-  <header>
+  <div class="top-banner">
     <h1>Seja Bem Carioca!</h1>
-  </header>  <p class="subtitulo">Feira Cultural<br>– 901 –</p>  <h2>Seja Bem-Vindo</h2>  <div class="texto">
-    Nossa turma é estudiosa, criativa e cheia de energia! Criamos este espaço para compartilhar mensagens de motivação durante nossa Feira Cultural. <br><br>
-    <strong>Em nome de Jesus, vamos conseguir!</strong><br><br>
-    Agradecemos de coração a todos que estão fazendo parte dessa jornada. 💚
-  </div>  <div class="mural">
-    <h3>Mural de Animação 💬</h3>
-    <input type="text" id="nome" placeholder="Seu nome">
-    <input type="text" id="mensagem" placeholder="Sua mensagem">
-    <button onclick="enviarMensagem()">Enviar</button>
-    <div class="obrigado" id="obrigado">Obrigado por compartilhar sua energia! 🙌</div>
-    <div class="mensagens" id="mensagens"></div>
   </div>
+
+  <div class="section">
+    <p>Feira Cultural<br>– 901 –</p>
+    <h2>Seja Bem-Vindo</h2>
+    <p>
+      Nossa turma é estudiosa, criativa e cheia de energia! <br>
+      Criamos este espaço para compartilhar mensagens de motivação durante nossa Feira Cultural.<br><br>
+      <strong>Em nome de Jesus, vamos conseguir!</strong><br><br>
+      Agradecemos de coração a todos que estão fazendo parte dessa jornada 💚
+    </p>
+  </div>
+
+  <div class="formulario">
+    <h2>Deixe sua mensagem ✨</h2>
+    <form id="messageForm">
+      <input type="text" id="nome" placeholder="Seu primeiro nome" required />
+      <textarea id="mensagem" rows="3" placeholder="Escreva uma palavra de motivação!" required></textarea>
+      <button type="submit">Enviar 💪🏽</button>
+    </form>
+  </div>
+
+  <div class="mural" id="mural">
+    <!-- As mensagens aparecerão aqui -->
+  </div>
+
+  <div class="turma-img">
+    <img src="turma.jpg" alt="Foto da nossa turma">
+    <h3>Nossa Turma</h3>
+  </div>
+
+  <script>
+    const form = document.getElementById('messageForm');
+    const mural = document.getElementById('mural');
+
+    const emojis = {
+      "fé": "🙏",
+      "força": "💪",
+      "amor": "❤️",
+      "esperança": "💚",
+      "carinho": "💝"
+    };
+
+    function aplicarEmojis(texto) {
+      for (const palavra in emojis) {
+        const regex = new RegExp(palavra, 'gi');
+        texto = texto.replace(regex, emojis[palavra]);
+      }
+      return texto;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value;
+      const mensagem = document.getElementById('mensagem').value;
+
+      const div = document.createElement('div');
+      div.className = 'mural-message';
+      div.innerHTML = `<strong>${nome[0].toUpperCase()}:</strong> ${aplicarEmojis(mensagem)}`;
+      mural.prepend(div);
+
+      form.reset();
+    });
+  </script>
 </body>
 </html>
