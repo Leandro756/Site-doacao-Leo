@@ -1,137 +1,107 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feira Cultural 901</title>
+  <title>Mural de Mensagens</title>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      font-family: 'Comic Sans MS', cursive;
+      font-family: sans-serif;
       background-color: #1c1c1c;
       color: white;
-      text-align: center;
-    }
+    }.mural {
+  padding: 40px 20px;
+  text-align: center;
+}
 
-    .top-banner {
-      background-color: rgb(255, 104, 41);
-      padding: 40px 20px;
-    }
+.mural h3 {
+  font-family: 'Chewy', cursive;
+  font-size: 2.2em;
+  color: #ff6829;
+}
 
-    .top-banner h1 {
-      background-color: #4b2b1d;
-      display: inline-block;
-      padding: 15px 30px;
-      border-radius: 15px;
-      font-size: 2em;
-    }
+.formulario {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
 
-    .section {
-      padding: 40px 20px;
-    }
+input, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+}
 
-    .section h2 {
-      font-size: 2.5em;
-    }
+input, textarea {
+  font-size: 1em;
+}
 
-    .mural {
-      margin: 40px auto;
-      max-width: 600px;
-      text-align: left;
-    }
+button {
+  background-color: #006400;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .mural-message {
-      background-color: #333;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-      animation: fadeIn 0.5s ease-in;
-    }
+.mensagens {
+  margin-top: 30px;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+.msg {
+  background-color: #333;
+  padding: 15px;
+  margin: 10px auto;
+  max-width: 500px;
+  border-radius: 12px;
+  animation: fadein 0.4s ease-in-out;
+}
 
-    .formulario {
-      margin: 40px auto;
-      max-width: 600px;
-    }
+.msg .autor {
+  font-size: 0.9em;
+  color: #999;
+}
 
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      margin: 10px 0;
-    }
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-    button {
-      background-color: #006400;
-      color: white;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1em;
-      cursor: pointer;
-    }
-
-    .turma-img {
-      margin-top: 60px;
-    }
-
-    .turma-img img {
-      width: 90%;
-      max-width: 600px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-    }
-
-    .turma-img h3 {
-      margin-top: 10px;
-      color: #006400;
-    }
   </style>
 </head>
 <body>
-  <div class="top-banner">
-    <h1>Seja Bem Carioca!</h1>
-  </div>
+  <section class="mural">
+    <h3>Mural de Motivação</h3>
+    <div class="formulario">
+      <form id="form-msg">
+        <input type="text" id="nome" placeholder="Seu primeiro nome" required />
+        <textarea id="mensagem" placeholder="Escreva uma mensagem de motivação" required></textarea>
+        <button type="submit">Enviar 💪🏽</button>
+      </form>
+    </div>
+    <div class="mensagens" id="mensagens"></div>
+  </section>  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <div class="section">
-    <p>Feira Cultural<br>– 901 –</p>
-    <h2>Seja Bem-Vindo</h2>
-    <p>
-      Nossa turma é estudiosa, criativa e cheia de energia! <br>
-      Criamos este espaço para compartilhar mensagens de motivação durante nossa Feira Cultural.<br><br>
-      <strong>Em nome de Jesus, vamos conseguir!</strong><br><br>
-      Agradecemos de coração a todos que estão fazendo parte dessa jornada 💚
-    </p>
-  </div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBthtSWTasL2WjQk0SFx57rJOaxpDJsR2M",
+      authDomain: "site-doacao-leo.firebaseapp.com",
+      projectId: "site-doacao-leo",
+      storageBucket: "site-doacao-leo.appspot.com",
+      messagingSenderId: "206208964375",
+      appId: "1:206208964375:web:10ade79ddd031f6a4ac952"
+    };
 
-  <div class="formulario">
-    <h2>Deixe sua mensagem ✨</h2>
-    <form id="messageForm">
-      <input type="text" id="nome" placeholder="Seu primeiro nome" required />
-      <textarea id="mensagem" rows="3" placeholder="Escreva uma palavra de motivação!" required></textarea>
-      <button type="submit">Enviar 💪🏽</button>
-    </form>
-  </div>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  <div class="mural" id="mural">
-    <!-- As mensagens aparecerão aqui -->
-  </div>
+    const form = document.getElementById("form-msg");
+    const mensagensDiv = document.getElementById("mensagens");
 
-  <div class="turma-img">
-    <img src="turma.jpg" alt="Foto da nossa turma">
-    <h3>Nossa Turma</h3>
-  </div>
-
-  <script>
-    const form = document.getElementById('messageForm');
-    const mural = document.getElementById('mural');
-
-    const emojis = {
+    const emojiMap = {
       "fé": "🙏",
       "força": "💪",
       "amor": "❤️",
@@ -139,26 +109,34 @@
       "carinho": "💝"
     };
 
-    function aplicarEmojis(texto) {
-      for (const palavra in emojis) {
-        const regex = new RegExp(palavra, 'gi');
-        texto = texto.replace(regex, emojis[palavra]);
+    function substituirEmojis(texto) {
+      let resultado = texto;
+      for (const palavra in emojiMap) {
+        const regex = new RegExp(`\\b${palavra}\\b`, 'gi');
+        resultado = resultado.replace(regex, emojiMap[palavra]);
       }
-      return texto;
+      return resultado;
     }
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const nome = document.getElementById('nome').value;
-      const mensagem = document.getElementById('mensagem').value;
-
-      const div = document.createElement('div');
-      div.className = 'mural-message';
-      div.innerHTML = `<strong>${nome[0].toUpperCase()}:</strong> ${aplicarEmojis(mensagem)}`;
-      mural.prepend(div);
-
-      form.reset();
+      const nome = document.getElementById("nome").value.trim();
+      const mensagem = document.getElementById("mensagem").value.trim();
+      if (nome && mensagem) {
+        await addDoc(collection(db, "mensagens"), { nome, mensagem });
+        form.reset();
+      }
     });
-  </script>
-</body>
+
+    onSnapshot(collection(db, "mensagens"), (snapshot) => {
+      mensagensDiv.innerHTML = "";
+      snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        const msg = document.createElement("div");
+        msg.className = "msg";
+        msg.innerHTML = `<p>${substituirEmojis(data.mensagem)}</p><p class="autor">— ${data.nome}</p>`;
+        mensagensDiv.prepend(msg);
+      });
+    });
+  </script></body>
 </html>
