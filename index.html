@@ -91,6 +91,10 @@
         if (dados.nome.toLowerCase() === "nanda renovato") {
           emojiNome = " ⚡";
         
+        let emojiNome = "";
+        if (dados.nome.toLowerCase() === "pytter") {
+          emojiNome = " ⬛";
+        
         } else {
           const emojiSorteado = emojisAleatorios[Math.floor(Math.random() * emojisAleatorios.length)];
           emojiNome = ` ${emojiSorteado}`;
