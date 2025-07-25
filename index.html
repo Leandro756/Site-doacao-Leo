@@ -66,14 +66,33 @@
     const mensagemInput = document.getElementById('mensagem');
     const mensagensDiv = document.getElementById('mensagens');
 
+    const emojisAleatorios = ["🥳","💪🏽","😎","🦅","🤩","🍾","🤑","🤓","🩵","❤️‍🔥"];
+
     async function carregarMensagens() {
       mensagensDiv.innerHTML = "";
       const q = query(collection(db, "mensagens"), orderBy("data", "desc"));
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach(doc => {
         const dados = doc.data();
+
+        let mensagemComEmojis = dados.mensagem
+          .replace(/\bfé\b/gi, "🙏")
+          .replace(/\bforça\b/gi, "💪")
+          .replace(/\bamor\b/gi, "❤️")
+          .replace(/\besperança\b/gi, "💚")
+          .replace(/\bcarinho\b/gi, "💝")
+          .replace(/\bkatchau\b/gi, "⚡");
+
+        let emojiNome = "";
+        if (dados.nome.toLowerCase() === "diego nery") {
+          emojiNome = " ⚡";
+        } else {
+          const emojiSorteado = emojisAleatorios[Math.floor(Math.random() * emojisAleatorios.length)];
+          emojiNome = ` ${emojiSorteado}`;
+        }
+
         const p = document.createElement('p');
-        p.innerHTML = `<strong>${dados.nome}:</strong> ${dados.mensagem}`;
+        p.innerHTML = `<strong>${dados.nome}${emojiNome}:</strong> ${mensagemComEmojis}`;
         mensagensDiv.appendChild(p);
       });
     }
