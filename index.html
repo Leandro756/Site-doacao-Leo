@@ -1,197 +1,102 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR"> 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mural de Mensagens</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
     body {
-      margin: 0;
-      padding: 0;
-      background-color: #0047ab; /* azul forte */
-      font-family: Arial, sans-serif;
-      color: #fff;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Círculo decorativo */
-    body::before {
-      content: "";
-      position: absolute;
-      top: -150px;
-      left: -150px;
-      width: 600px;
-      height: 600px;
-      background-color: #5a5fd2; /* roxo/lilás */
-      border-radius: 50%;
-      z-index: 0;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #ffd700; /* amarelo ouro */
-      margin-top: 40px;
-      position: relative;
-      z-index: 1;
-    }
-
-    form {
-      background-color: #dbe9ff;
-      border-radius: 10px;
-      padding: 20px;
-      max-width: 500px;
-      margin: 20px auto;
-      display: flex;
-      flex-direction: column;
-      z-index: 1;
-      position: relative;
-    }
-
-    input, textarea {
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 1em;
-      border-radius: 6px;
-      border: none;
-      width: 100%;
-    }
-
-    button {
-      background-color: #fdd315;
-      color: black;
-      font-weight: bold;
-      font-size: 1em;
-      padding: 12px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-    }
-
-    #mensagens {
-      max-width: 500px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    .mensagem {
-      background-color: #dbe9ff;
-      color: #000;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    .avatar {
-      background-color: #0047ab;
-      color: white;
-      font-weight: bold;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 10px;
-    }
-
-    .mensagem-container {
-      display: flex;
-      align-items: center;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      font-family: 'Roboto', sans-serif;
     }
   </style>
 </head>
-<body>
-  <h1>Mural de Mensagens</h1>
-  <form id="mensagem-form">
-    <input type="text" id="nome" placeholder="Seu nome" required />
-    <textarea id="mensagem" rows="4" placeholder="Escreva sua mensagem aqui..." required></textarea>
-    <button type="submit">Enviar</button>
-  </form>
-  <div id="mensagens"></div>
+<body class="bg-[#0047AB] relative min-h-screen flex flex-col items-center pt-8">
+  <div class="fixed top-0 left-0 w-[400px] h-[400px] rounded-full bg-[#4B55C2] -translate-x-1/2 -translate-y-1/2 -z-10"></div>
 
-  <!-- Firebase -->
+  <h1 class="text-yellow-400 font-extrabold text-xl mb-6 z-10 relative">Mural de Mensagens</h1>
+
+  <form id="mensagem-form" class="bg-[#cbd9ed] rounded-lg p-6 w-[600px] max-w-full shadow-md flex flex-col gap-4 z-10 relative">
+    <input
+      type="text"
+      id="nome"
+      placeholder="Seu nome"
+      class="rounded-md p-3 text-gray-600 text-base placeholder-gray-400 focus:outline-none"
+    />
+    <textarea
+      id="mensagem"
+      rows="4"
+      placeholder="Escreva sua mensagem aqui..."
+      class="rounded-md p-3 text-gray-600 text-base placeholder-gray-400 resize-none focus:outline-none"
+    ></textarea>
+    <button
+      type="submit"
+      class="bg-yellow-400 text-[#0047AB] font-extrabold py-3 rounded-md hover:bg-yellow-500 transition-colors"
+    >
+      Enviar
+    </button>
+  </form>
+
+  <div id="mensagens" class="bg-[#cbd9ed] rounded-md mt-6 w-[600px] max-w-full shadow-md z-10 relative p-4 flex flex-col gap-2"></div>
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBthtSWTasL2WjQk0SFx57rJOaxpDJsR2M",
-      authDomain: "site-doacao-leo.firebaseapp.com",
-      projectId: "site-doacao-leo",
-      storageBucket: "site-doacao-leo.appspot.com",
-      messagingSenderId: "206208964375",
-      appId: "1:206208964375:web:10ade79ddd031f6a4ac952"
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_DOMINIO.firebaseapp.com",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_BUCKET.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const form = document.getElementById("mensagem-form");
-    const mensagensDiv = document.getElementById("mensagens");
+    const form = document.getElementById('mensagem-form');
+    const nomeInput = document.getElementById('nome');
+    const mensagemInput = document.getElementById('mensagem');
+    const mensagensDiv = document.getElementById('mensagens');
 
-    const emojiMap = {
-      "fé": "🙏",
-      "força": "💪",
-      "amor": "❤️",
-      "esperança": "💚",
-      "carinho": "💝"
-    };
-
-    function substituirPorEmoji(texto) {
-      let resultado = texto;
-      for (const palavra in emojiMap) {
-        const regex = new RegExp(`\\b${palavra}\\b`, "gi");
-        resultado = resultado.replace(regex, emojiMap[palavra]);
-      }
-      return resultado;
+    async function carregarMensagens() {
+      mensagensDiv.innerHTML = "";
+      const q = query(collection(db, "mensagens"), orderBy("data", "desc"));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(doc => {
+        const dados = doc.data();
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${dados.nome}:</strong> ${dados.mensagem}`;
+        mensagensDiv.appendChild(p);
+      });
     }
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const nome = document.getElementById("nome").value.trim();
-      const texto = document.getElementById("mensagem").value.trim();
-      if (!nome || !texto) return;
+      const nome = nomeInput.value.trim();
+      const mensagem = mensagemInput.value.trim();
 
-      const mensagemComEmoji = substituirPorEmoji(texto);
-
-      await addDoc(collection(db, "mensagens"), {
-        nome,
-        texto: mensagemComEmoji,
-        criadoEm: new Date()
-      });
-
-      form.reset();
+      if (nome && mensagem) {
+        await addDoc(collection(db, "mensagens"), {
+          nome,
+          mensagem,
+          data: serverTimestamp()
+        });
+        nomeInput.value = "";
+        mensagemInput.value = "";
+        carregarMensagens();
+      }
     });
 
-    const q = query(collection(db, "mensagens"), orderBy("criadoEm", "desc"));
-
-    onSnapshot(q, (snapshot) => {
-      mensagensDiv.innerHTML = "";
-      snapshot.forEach(doc => {
-        const { nome, texto } = doc.data();
-        const inicial = nome.charAt(0).toUpperCase();
-
-        const msgEl = document.createElement("div");
-        msgEl.className = "mensagem";
-        msgEl.innerHTML = `
-          <div class="mensagem-container">
-            <div class="avatar">${inicial}</div>
-            <div><strong>${nome}</strong><br/>${texto}</div>
-          </div>
-        `;
-        mensagensDiv.appendChild(msgEl);
-      });
-    });
+    carregarMensagens();
   </script>
 </body>
 </html>
+
