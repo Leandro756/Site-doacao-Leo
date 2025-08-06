@@ -1,54 +1,37 @@
-<html lang="pt-BR"> 
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mural de Mensagens</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Galeria de Fotos</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  />
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-    body {
-      font-family: 'Roboto', sans-serif;
-    }
-  </style>
 </head>
-<body class="bg-[#0047AB] relative min-h-screen flex flex-col items-center pt-8">
-  <div class="fixed top-0 left-0 w-[400px] h-[400px] rounded-full bg-[#4B55C2] -translate-x-1/2 -translate-y-1/2 -z-10"></div>
+<body class="bg-gray-900 text-white flex flex-col items-center p-6">
 
-  <h1 class="text-yellow-400 font-extrabold text-xl mb-6 z-10 relative">Mural de Mensagens</h1>
+  <h1 class="text-2xl font-bold mb-4">📸 Tire sua Foto e Publique</h1>
 
-  <form id="mensagem-form" class="bg-[#cbd9ed] rounded-lg p-6 w-[600px] max-w-full shadow-md flex flex-col gap-4 z-10 relative">
-    <input
-      type="text"
-      id="nome"
-      placeholder="Seu nome"
-      class="rounded-md p-3 text-gray-600 text-base placeholder-gray-400 focus:outline-none"
-    />
-    <textarea
-      id="mensagem"
-      rows="4"
-      placeholder="Escreva sua mensagem aqui..."
-      class="rounded-md p-3 text-gray-600 text-base placeholder-gray-400 resize-none focus:outline-none"
-    ></textarea>
-    <button
-      type="submit"
-      class="bg-yellow-400 text-[#0047AB] font-extrabold py-3 rounded-md hover:bg-yellow-500 transition-colors"
-    >
-      Enviar
-    </button>
-  </form>
+  <!-- Pré-visualização da câmera -->
+  <video id="camera" autoplay playsinline class="rounded-lg border-4 border-green-500 mb-4"></video>
 
-  <div id="mensagens" class="bg-[#cbd9ed] rounded-md mt-6 w-[600px] max-w-full shadow-md z-10 relative p-4 flex flex-col gap-2"></div>
+  <!-- Botões -->
+  <div class="flex gap-4">
+    <button id="tirarFoto" class="bg-green-500 px-4 py-2 rounded font-bold hover:bg-green-600">Tirar Foto</button>
+    <button id="publicarFoto" disabled class="bg-blue-500 px-4 py-2 rounded font-bold hover:bg-blue-600">Publicar Foto</button>
+  </div>
 
+  <!-- Canvas oculto para capturar imagem -->
+  <canvas id="canvas" class="hidden"></canvas>
+
+  <!-- Galeria -->
+  <h2 class="text-xl font-bold mt-8">🖼 Galeria</h2>
+  <div id="galeria" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4"></div>
+
+  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+    import { getStorage, ref, uploadString, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
+    // 🔹 CONFIGURAÇÃO DO FIREBASE — TROCAR PELOS SEUS DADOS
     const firebaseConfig = {
       apiKey: "SUA_API_KEY",
       authDomain: "SEU_DOMINIO.firebaseapp.com",
@@ -59,72 +42,59 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-    const form = document.getElementById('mensagem-form');
-    const nomeInput = document.getElementById('nome');
-    const mensagemInput = document.getElementById('mensagem');
-    const mensagensDiv = document.getElementById('mensagens');
+    const video = document.getElementById("camera");
+    const canvas = document.getElementById("canvas");
+    const tirarFotoBtn = document.getElementById("tirarFoto");
+    const publicarFotoBtn = document.getElementById("publicarFoto");
+    const galeriaDiv = document.getElementById("galeria");
 
-    const emojisAleatorios = ["🥳","💪🏽","😎","🦅","🤩","🍾","🤑","🤓","🩵","❤️‍🔥"];
+    let imagemBase64 = null;
 
-    async function carregarMensagens() {
-      mensagensDiv.innerHTML = "";
-      const q = query(collection(db, "mensagens"), orderBy("data", "desc"));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach(doc => {
-        const dados = doc.data();
-
-        let mensagemComEmojis = dados.mensagem
-          .replace(/\bfé\b/gi, "🙏")
-          .replace(/\bforça\b/gi, "💪")
-          .replace(/\bamor\b/gi, "❤️")
-          .replace(/\besperança\b/gi, "💚")
-          .replace(/\bcarinho\b/gi, "💝")
-          .replace(/\bkatchau\b/gi, "⚡");
-
-        let emojiNome = "";
-        if (dados.nome.toLowerCase() === "diego nery") {
-          emojiNome = " ⚡"; 
-        
-        let emojiNome = ""
-        if (dados.nome.toLowerCase() === "nanda renovato") {
-          emojiNome = " ⚡";
-        
-        let emojiNome = "";
-        if (dados.nome.toLowerCase() === "pytter") {
-          emojiNome = " ⬛";
-        
-        } else {
-          const emojiSorteado = emojisAleatorios[Math.floor(Math.random() * emojisAleatorios.length)];
-          emojiNome = ` ${emojiSorteado}`;
-        }
-
-        const p = document.createElement('p');
-        p.innerHTML = `<strong>${dados.nome}${emojiNome}:</strong> ${mensagemComEmojis}`;
-        mensagensDiv.appendChild(p);
-      });
+    // 📷 Abrir câmera
+    async function abrirCamera() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nome = nomeInput.value.trim();
-      const mensagem = mensagemInput.value.trim();
-
-      if (nome && mensagem) {
-        await addDoc(collection(db, "mensagens"), {
-          nome,
-          mensagem,
-          data: serverTimestamp()
-        });
-        nomeInput.value = "";
-        mensagemInput.value = "";
-        carregarMensagens();
-      }
+    // 📸 Tirar foto
+    tirarFotoBtn.addEventListener("click", () => {
+      const ctx = canvas.getContext("2d");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      imagemBase64 = canvas.toDataURL("image/png");
+      publicarFotoBtn.disabled = false;
     });
 
-    carregarMensagens();
+    // ☁️ Publicar no Firebase Storage
+    publicarFotoBtn.addEventListener("click", async () => {
+      if (!imagemBase64) return;
+      const nomeArquivo = `foto_${Date.now()}.png`;
+      const fotoRef = ref(storage, `fotos/${nomeArquivo}`);
+      await uploadString(fotoRef, imagemBase64, 'data_url');
+      alert("✅ Foto publicada!");
+      publicarFotoBtn.disabled = true;
+      carregarGaleria();
+    });
+
+    // 📂 Carregar todas as fotos da galeria
+    async function carregarGaleria() {
+      galeriaDiv.innerHTML = "";
+      const pastaRef = ref(storage, "fotos");
+      const lista = await listAll(pastaRef);
+      for (const item of lista.items) {
+        const url = await getDownloadURL(item);
+        const img = document.createElement("img");
+        img.src = url;
+        img.className = "rounded-lg border-2 border-white";
+        galeriaDiv.appendChild(img);
+      }
+    }
+
+    abrirCamera();
+    carregarGaleria();
   </script>
 </body>
 </html>
-
