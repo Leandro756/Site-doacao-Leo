@@ -11,34 +11,47 @@
       min-height: 100vh;
       color: white;
     }
+    .menu-opcoes {
+      display: none;
+      position: absolute;
+      right: 10px;
+      top: 30px;
+      background: rgba(0,0,0,0.85);
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .menu-opcoes button {
+      background: transparent;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    .menu-opcoes button:hover {
+      background: rgba(255,255,255,0.1);
+    }
   </style>
 </head>
 <body class="flex flex-col items-center p-6">
 
   <h1 class="text-2xl font-bold mb-4">📸 Tire sua Foto e Publique</h1>
 
-  <!-- Pré-visualização da câmera -->
   <video id="camera" autoplay playsinline class="rounded-lg border-4 border-white shadow-lg mb-4"></video>
 
-  <!-- Botões -->
   <div class="flex gap-4">
-    <button id="tirarFoto" class="bg-blue-500 px-4 py-2 rounded font-bold hover:bg-blue-600">Tirar Foto</button>
-    <button id="publicarFoto" disabled class="bg-blue-400 text-black px-4 py-2 rounded font-bold hover:bg-blue-500">Publicar Foto</button>
+    <button id="tirarFoto" class="bg-[#4D7493] px-4 py-2 rounded font-bold hover:brightness-110">Tirar Foto</button>
+    <button id="publicarFoto" disabled class="bg-[#4D7493] px-4 py-2 rounded font-bold hover:brightness-110">Publicar Foto</button>
   </div>
 
-  <!-- Canvas oculto -->
   <canvas id="canvas" class="hidden"></canvas>
 
-  <!-- Galeria -->
   <h2 class="text-xl font-bold mt-8">🖼 Galeria</h2>
   <div id="galeria" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4"></div>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, uploadString, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, uploadString, getDownloadURL, listAll, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
-    // 🔹 Configuração do Firebase — TROCAR PELOS SEUS DADOS
     const firebaseConfig = {
       apiKey: "SUA_API_KEY",
       authDomain: "SEU_DOMINIO.firebaseapp.com",
@@ -59,13 +72,11 @@
 
     let imagemBase64 = null;
 
-    // 📷 Abrir câmera
     async function abrirCamera() {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       video.srcObject = stream;
     }
 
-    // 📸 Tirar foto
     tirarFotoBtn.addEventListener("click", () => {
       const ctx = canvas.getContext("2d");
       canvas.width = video.videoWidth;
@@ -75,7 +86,6 @@
       publicarFotoBtn.disabled = false;
     });
 
-    // ☁️ Publicar no Firebase Storage
     publicarFotoBtn.addEventListener("click", async () => {
       if (!imagemBase64) return;
       const nomeArquivo = `foto_${Date.now()}.png`;
@@ -86,17 +96,49 @@
       carregarGaleria();
     });
 
-    // 📂 Carregar galeria
     async function carregarGaleria() {
       galeriaDiv.innerHTML = "";
       const pastaRef = ref(storage, "fotos");
       const lista = await listAll(pastaRef);
       for (const item of lista.items) {
         const url = await getDownloadURL(item);
+
+        const container = document.createElement("div");
+        container.className = "relative";
+
         const img = document.createElement("img");
         img.src = url;
-        img.className = "rounded-lg border-2 border-white shadow-md";
-        galeriaDiv.appendChild(img);
+        img.className = "rounded-lg border-2 border-white shadow-md w-full";
+
+        const menuBtn = document.createElement("button");
+        menuBtn.innerHTML = "⋮";
+        menuBtn.className = "absolute top-2 right-2 text-white text-lg bg-black bg-opacity-50 px-2 rounded";
+
+        const menuOpcoes = document.createElement("div");
+        menuOpcoes.className = "menu-opcoes";
+        const btnExcluir = document.createElement("button");
+        btnExcluir.textContent = "Excluir";
+        btnExcluir.onclick = async () => {
+          const senha = prompt("Digite a senha para excluir:");
+          if (senha === "7319") {
+            await deleteObject(item);
+            alert("🗑 Foto excluída!");
+            carregarGaleria();
+          } else {
+            alert("❌ Senha incorreta!");
+          }
+        };
+
+        menuOpcoes.appendChild(btnExcluir);
+        container.appendChild(img);
+        container.appendChild(menuBtn);
+        container.appendChild(menuOpcoes);
+
+        menuBtn.addEventListener("click", () => {
+          menuOpcoes.style.display = menuOpcoes.style.display === "block" ? "none" : "block";
+        });
+
+        galeriaDiv.appendChild(container);
       }
     }
 
