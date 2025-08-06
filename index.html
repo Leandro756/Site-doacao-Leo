@@ -5,33 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Galeria de Fotos</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #582395, #0783af);
+      min-height: 100vh;
+      color: white;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center p-6">
+<body class="flex flex-col items-center p-6">
 
   <h1 class="text-2xl font-bold mb-4">📸 Tire sua Foto e Publique</h1>
 
   <!-- Pré-visualização da câmera -->
-  <video id="camera" autoplay playsinline class="rounded-lg border-4 border-green-500 mb-4"></video>
+  <video id="camera" autoplay playsinline class="rounded-lg border-4 border-white shadow-lg mb-4"></video>
 
   <!-- Botões -->
   <div class="flex gap-4">
     <button id="tirarFoto" class="bg-green-500 px-4 py-2 rounded font-bold hover:bg-green-600">Tirar Foto</button>
-    <button id="publicarFoto" disabled class="bg-blue-500 px-4 py-2 rounded font-bold hover:bg-blue-600">Publicar Foto</button>
+    <button id="publicarFoto" disabled class="bg-yellow-400 text-black px-4 py-2 rounded font-bold hover:bg-yellow-500">Publicar Foto</button>
   </div>
 
-  <!-- Canvas oculto para capturar imagem -->
+  <!-- Canvas oculto -->
   <canvas id="canvas" class="hidden"></canvas>
 
   <!-- Galeria -->
   <h2 class="text-xl font-bold mt-8">🖼 Galeria</h2>
   <div id="galeria" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4"></div>
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
     import { getStorage, ref, uploadString, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
-    // 🔹 CONFIGURAÇÃO DO FIREBASE — TROCAR PELOS SEUS DADOS
+    // 🔹 Configuração do Firebase — TROCAR PELOS SEUS DADOS
     const firebaseConfig = {
       apiKey: "SUA_API_KEY",
       authDomain: "SEU_DOMINIO.firebaseapp.com",
@@ -79,7 +86,7 @@
       carregarGaleria();
     });
 
-    // 📂 Carregar todas as fotos da galeria
+    // 📂 Carregar galeria
     async function carregarGaleria() {
       galeriaDiv.innerHTML = "";
       const pastaRef = ref(storage, "fotos");
@@ -88,7 +95,7 @@
         const url = await getDownloadURL(item);
         const img = document.createElement("img");
         img.src = url;
-        img.className = "rounded-lg border-2 border-white";
+        img.className = "rounded-lg border-2 border-white shadow-md";
         galeriaDiv.appendChild(img);
       }
     }
