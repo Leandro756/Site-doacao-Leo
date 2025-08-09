@@ -2,148 +2,100 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Galeria de Fotos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feira Cultural - Doação por Pix</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background: linear-gradient(135deg, #582395, #0783af);
+      font-family: 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #0047AB 0%, #3b82f6 100%);
       min-height: 100vh;
-      color: white;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
-    .menu-opcoes {
-      display: none;
-      position: absolute;
-      right: 10px;
-      top: 30px;
-      background: rgba(0,0,0,0.85);
-      padding: 5px;
-      border-radius: 5px;
+    .gradient-text {
+      background: linear-gradient(90deg, #FBBF24 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
     }
-    .menu-opcoes button {
-      background: transparent;
-      color: white;
-      border: none;
-      cursor: pointer;
-      padding: 4px 8px;
+    .btn-anim {
+      transition: transform 0.15s, box-shadow 0.15s, background 0.25s;
+      box-shadow: 0 2px 12px rgba(59, 130, 246, 0.15);
     }
-    .menu-opcoes button:hover {
-      background: rgba(255,255,255,0.1);
+    .btn-anim:hover {
+      transform: scale(1.08) rotate(-2deg);
+      background: linear-gradient(90deg, #60a5fa, #fbbf24);
+      color: #fff !important;
+      box-shadow: 0 6px 24px rgba(59, 130, 246, 0.25);
+    }
+    .btn-anim:active {
+      transform: scale(0.98);
+      filter: brightness(0.95);
+    }
+    @keyframes float {
+      0% {transform: translateY(0)}
+      50% {transform: translateY(-12px)}
+      100% {transform: translateY(0)}
+    }
+    .float-anim {
+      animation: float 3s ease-in-out infinite;
     }
   </style>
 </head>
-<body class="flex flex-col items-center p-6">
+<body class="w-full h-screen min-h-screen min-h-dvh flex flex-col justify-center items-center px-4 py-0">
 
-  <h1 class="text-2xl font-bold mb-4">📸 Tire sua Foto e Publique</h1>
+  <!-- Ornamento animado -->
+  <div class="fixed top-0 left-0 w-80 h-80 rounded-full bg-blue-300 opacity-30 -z-10 float-anim"></div>
+  <div class="fixed bottom-0 right-0 w-64 h-64 rounded-full bg-blue-600 opacity-20 -z-10"></div>
 
-  <video id="camera" autoplay playsinline class="rounded-lg border-4 border-white shadow-lg mb-4"></video>
+  <div class="flex flex-1 items-center justify-center w-full min-h-[80vh]">
+    <main class="bg-white bg-opacity-95 rounded-2xl shadow-2xl px-8 py-10 max-w-lg w-full flex flex-col items-center mx-auto">
+      <h1 class="gradient-text text-4xl font-extrabold mb-2 text-center drop-shadow">Feira Cultural</h1>
+      <p class="text-blue-700 text-lg font-semibold mb-6 text-center">
+        Venha participar e apoiar nosso evento escolar!<br>
+        <span class="text-blue-400 font-bold">Ajude com uma doação via Pix e faça a diferença!</span>
+      </p>
 
-  <div class="flex gap-4">
-    <button id="tirarFoto" class="bg-[#4D7493] px-4 py-2 rounded font-bold hover:brightness-110">Tirar Foto</button>
-    <button id="publicarFoto" disabled class="bg-[#4D7493] px-4 py-2 rounded font-bold hover:brightness-110">Publicar Foto</button>
+      <div class="flex flex-col items-center gap-3 mb-6">
+        <span class="text-gray-700 font-semibold text-center">Chave Pix para doação:</span>
+        <div class="flex items-center gap-2">
+          <span id="pix-key" class="text-blue-700 font-mono bg-blue-100 px-3 py-1 rounded-lg select-all">
+            976516465
+          </span>
+          <button
+            id="copy-pix"
+            class="btn-anim bg-yellow-400 text-blue-900 font-bold px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 active:scale-95"
+          >
+            <i class="fas fa-copy"></i> Copiar
+          </button>
+        </div>
+        <span id="copy-confirm" class="text-green-600 font-medium text-sm opacity-0 transition-opacity">Copiado!</span>
+      </div>
+    </main>
   </div>
 
-  <canvas id="canvas" class="hidden"></canvas>
+  <footer class="mb-4 text-blue-900 text-center opacity-80">
+    &copy; 2025 Feira Cultural - Leandro F Silva
+  </footer>
 
-  <h2 class="text-xl font-bold mt-8">🖼 Galeria</h2>
-  <div id="galeria" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4"></div>
+  <!-- Font Awesome -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, uploadString, getDownloadURL, listAll, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_DOMINIO.firebaseapp.com",
-      projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_BUCKET.appspot.com",
-      messagingSenderId: "SEU_SENDER_ID",
-      appId: "SEU_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const storage = getStorage(app);
-
-    const video = document.getElementById("camera");
-    const canvas = document.getElementById("canvas");
-    const tirarFotoBtn = document.getElementById("tirarFoto");
-    const publicarFotoBtn = document.getElementById("publicarFoto");
-    const galeriaDiv = document.getElementById("galeria");
-
-    let imagemBase64 = null;
-
-    async function abrirCamera() {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
-    }
-
-    tirarFotoBtn.addEventListener("click", () => {
-      const ctx = canvas.getContext("2d");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      imagemBase64 = canvas.toDataURL("image/png");
-      publicarFotoBtn.disabled = false;
-    });
-
-    publicarFotoBtn.addEventListener("click", async () => {
-      if (!imagemBase64) return;
-      const nomeArquivo = `foto_${Date.now()}.png`;
-      const fotoRef = ref(storage, `fotos/${nomeArquivo}`);
-      await uploadString(fotoRef, imagemBase64, 'data_url');
-      alert("✅ Foto publicada!");
-      publicarFotoBtn.disabled = true;
-      carregarGaleria();
-    });
-
-    async function carregarGaleria() {
-      galeriaDiv.innerHTML = "";
-      const pastaRef = ref(storage, "fotos");
-      const lista = await listAll(pastaRef);
-      for (const item of lista.items) {
-        const url = await getDownloadURL(item);
-
-        const container = document.createElement("div");
-        container.className = "relative";
-
-        const img = document.createElement("img");
-        img.src = url;
-        img.className = "rounded-lg border-2 border-white shadow-md w-full";
-
-        const menuBtn = document.createElement("button");
-        menuBtn.innerHTML = "⋮";
-        menuBtn.className = "absolute top-2 right-2 text-white text-lg bg-black bg-opacity-50 px-2 rounded";
-
-        const menuOpcoes = document.createElement("div");
-        menuOpcoes.className = "menu-opcoes";
-        const btnExcluir = document.createElement("button");
-        btnExcluir.textContent = "Excluir";
-        btnExcluir.onclick = async () => {
-          const senha = prompt("Digite a senha para excluir:");
-          if (senha === "7319") {
-            await deleteObject(item);
-            alert("🗑 Foto excluída!");
-            carregarGaleria();
-          } else {
-            alert("❌ Senha incorreta!");
-          }
-        };
-
-        menuOpcoes.appendChild(btnExcluir);
-        container.appendChild(img);
-        container.appendChild(menuBtn);
-        container.appendChild(menuOpcoes);
-
-        menuBtn.addEventListener("click", () => {
-          menuOpcoes.style.display = menuOpcoes.style.display === "block" ? "none" : "block";
+  <!-- Animação do botão de copiar Pix -->
+  <script>
+    const pixKey = '976516465'; // Troque pela sua chave Pix
+    document.getElementById('copy-pix').onclick = function() {
+      navigator.clipboard.writeText(pixKey)
+        .then(() => {
+          const confirm = document.getElementById('copy-confirm');
+          confirm.style.opacity = 1;
+          setTimeout(() => confirm.style.opacity = 0, 1800);
         });
-
-        galeriaDiv.appendChild(container);
-      }
-    }
-
-    abrirCamera();
-    carregarGaleria();
+    };
   </script>
 </body>
 </html>
