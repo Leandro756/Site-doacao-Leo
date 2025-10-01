@@ -1,111 +1,25 @@
-<html lang="pt-BR"> 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mural de Mensagens</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  />
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-    body {
-      font-family: 'Roboto', sans-serif;
-    }
-  </style>
-</head>
-<body class="bg-[#0047AB] relative min-h-screen flex flex-col items-center pt-8">
-  <div class="fixed top-0 left-0 w-[400px] h-[400px] rounded-full bg-[#4B55C2] -translate-x-1/2 -translate-y-1/2 -z-10"></div>  <h1 class="text-yellow-400 font-extrabold text-xl mb-6 z-10 relative">Mural de Mensagens</h1>  <form id="mensagem-form" class="bg-[#cbd9ed] rounded-lg p-6 w-[600px] max-w-full shadow-md flex flex-col gap-4 z-10 relative">
-    <input
-      type="text"
-      id="nome"
-      placeholder="Seu nome"
-      class="rounded-md p-3 text-gray-600 text-base placeholder-gray-400 focus:outline-none"
-    />
-    <textarea
-      id="mensagem"
-      rows="4"
-      placeholder="Escreva sua mensagem aqui..."
-      class="rounded-md p-3 text-gray-600 text-base placeholder-gray-400 resize-none focus:outline-none"
-    ></textarea>
-    <button
-      type="submit"
-      class="bg-yellow-400 text-[#0047AB] font-extrabold py-3 rounded-md hover:bg-yellow-500 transition-colors"
-    >
-      Enviar
-    </button>
-  </form>  <div id="mensagens" class="bg-[#cbd9ed] rounded-md mt-6 w-[600px] max-w-full shadow-md z-10 relative p-4 flex flex-col gap-2"></div>  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+.bat {
 
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_DOMINIO.firebaseapp.com",
-      projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_BUCKET.appspot.com",
-      messagingSenderId: "SEU_SENDER_ID",
-      appId: "SEU_APP_ID"
-    };
+吧
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+width: 1px;
 
-    const form = document.getElementById('mensagem-form');
-    const nomeInput = document.getElementById('nome');
-    const mensagemInput = document.getElementById('mensagem');
-    const mensagensDiv = document.getElementById('mensagens');
+height: 1px;
 
-    const emojisAleatorios = ["🥳","💪🏽","😎","🦅","🤩","🍾","🤑","🤓","🩵","❤️‍🔥"];
+position: relative;
 
-    async function carregarMensagens() {
-      mensagensDiv.innerHTML = "";
-      const q = query(collection(db, "mensagens"), orderBy("data", "desc"));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach(doc => {
-        const dados = doc.data();
+transform: translate(-128px, 128px) scale(4);
 
-        let mensagemComEmojis = dados.mensagem
-          .replace(/\bfé\b/gi, "🙏")
-          .replace(/\bforça\b/gi, "💪")
-          .replace(/\bamor\b/gi, "❤️")
-          .replace(/\besperança\b/gi, "💚")
-          .replace(/\bcarinho\b/gi, "💝")
-          .replace(/\bkatchau\b/gi, "⚡");
+animation: flap 0.4s steps (6) infinite;
 
-        let emojiNome = "";
-        if (dados.nome.toLowerCase() === "diego nery") {
-          emojiNome = " ⚡";
-        } else {
-          const emojiSorteado = emojisAleatorios[Math.floor(Math.random() * emojisAleatorios.length)];
-          emojiNome = ` ${emojiSorteado}`;
-        }
+}
 
-        const p = document.createElement('p');
-        p.innerHTML = `<strong>${dados.nome}${emojiNome}:</strong> ${mensagemComEmojis}`;
-        mensagensDiv.appendChild(p);
-      });
-    }
+@keyframes flap {
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nome = nomeInput.value.trim();
-      const mensagem = mensagemInput.value.trim();
+to {
 
-      if (nome && mensagem) {
-        await addDoc(collection(db, "mensagens"), {
-          nome,
-          mensagem,
-          data: serverTimestamp()
-        });
-        nomeInput.value = "";
-        mensagemInput.value = "";
-        carregarMensagens();
-      }
-    });
+background-position: -192px 0;
 
-    carregarMensagens();
-  </script></body>
-</html>
+}
+
+}
