@@ -1,225 +1,231 @@
-export default function CidadeAbertaBrasil() { const React = window.React; const { useState, useEffect } = React;
+export default function CidadeAbertaBrasil() {
+  const React = window.React;
+  const { useState, useEffect } = React;
 
-const edificios = [ "Casa", "Prédio", "Loja", "Shopping", "Hospital", "Escola", "Usina Solar", "Usina Eólica", "Usina Nuclear", "Estação de Trem", "Polícia Militar", "Polícia Civil", "Polícia Federal", "Bombeiro Militar", "Ambulância", "Base Naval", "Base Aérea", "Quartel do Exército", "Saneamento Básico" ];
+  const edificios = [
+    "Casa", "Prédio", "Loja", "Shopping", "Hospital", "Escola",
+    "Usina Solar", "Usina Eólica", "Usina Nuclear",
+    "Estação de Trem", "Polícia Militar", "Polícia Civil",
+    "Polícia Federal", "Bombeiro Militar", "Ambulância",
+    "Base Naval", "Base Aérea", "Quartel do Exército",
+    "Saneamento Básico"
+  ];
 
-const custos = { Casa: 500, "Prédio": 1500, "Loja": 1000, "Shopping": 4000, "Hospital": 5000, "Escola": 2500, "Usina Solar": 3500, "Usina Eólica": 4500, "Usina Nuclear": 12000, "Estação de Trem": 6000, "Polícia Militar": 2800, "Polícia Civil": 2800, "Polícia Federal": 4200, "Bombeiro Militar": 3000, "Ambulância": 2000, "Base Naval": 10000, "Base Aérea": 10000, "Quartel do Exército": 9000, "Saneamento Básico": 3200 };
+  const custos = {
+    "Casa": 500, "Prédio": 1500, "Loja": 1000, "Shopping": 4000,
+    "Hospital": 5000, "Escola": 2500,
+    "Usina Solar": 3500, "Usina Eólica": 4500, "Usina Nuclear": 12000,
+    "Estação de Trem": 6000,
+    "Polícia Militar": 2800, "Polícia Civil": 2800, "Polícia Federal": 4200,
+    "Bombeiro Militar": 3000, "Ambulância": 2000,
+    "Base Naval": 10000, "Base Aérea": 10000, "Quartel do Exército": 9000,
+    "Saneamento Básico": 3200
+  };
 
-const [dinheiro, setDinheiro] = useState(50000); const [populacao, setPopulacao] = useState(1200); const [energia, setEnergia] = useState(50); const [seguranca, setSeguranca] = useState(40); const [saneamento, setSaneamento] = useState(35); const [felicidade, setFelicidade] = useState(60); const [hora, setHora] = useState(8); const [cidade, setCidade] = useState([]); const [mensagens, setMensagens] = useState([ "A população quer mais saneamento.", "Construa usinas para aumentar a energia da cidade." ]);
+  const [dinheiro, setDinheiro] = useState(50000);
+  const [populacao, setPopulacao] = useState(1200);
+  const [energia, setEnergia] = useState(50);
+  const [seguranca, setSeguranca] = useState(40);
+  const [saneamento, setSaneamento] = useState(35);
+  const [felicidade, setFelicidade] = useState(60);
+  const [hora, setHora] = useState(8);
+  const [cidade, setCidade] = useState([]);
+  const [mensagens, setMensagens] = useState([
+    "Bem-vindo a Cidade Aberta Brasil!",
+    "A população quer mais saneamento."
+  ]);
 
-useEffect(() => { const tempo = setInterval(() => { setHora((h) => (h + 1) % 24);
+  // Timer principal
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHora((h) => (h + 1) % 24);
 
-setDinheiro((d) => d + Math.floor(populacao / 10));
+      // Geração de dinheiro (baseada em população + felicidade)
+      const lucroBase = Math.floor(populacao / 12);
+      const bonusFelicidade = Math.floor((felicidade - 50) / 3);
+      setDinheiro(d => d + Math.max(50, lucroBase + bonusFelicidade));
 
-  if (energia < 20) {
-    adicionarMensagem("A cidade está sofrendo apagões elétricos.");
+      // Eventos aleatórios
+      if (Math.random() < 0.15) {
+        const eventos = [
+          "Um festival aumentou a felicidade da cidade!",
+          "Chuva forte causou alagamento em alguns bairros.",
+          "Investidores estrangeiros visitaram a cidade.",
+          "Uma onda de calor aumentou o consumo de energia."
+        ];
+        adicionarMensagem(eventos[Math.floor(Math.random() * eventos.length)]);
+      }
+
+      // Penalidades
+      if (energia < 25) setFelicidade(f => Math.max(0, f - 3));
+      if (saneamento < 30) setFelicidade(f => Math.max(0, f - 2));
+      if (seguranca < 30) setFelicidade(f => Math.max(0, f - 4));
+
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [populacao, felicidade]);
+
+  function adicionarMensagem(msg) {
+    setMensagens(m => [msg, ...m].slice(0, 6));
   }
 
-  if (saneamento < 30) {
-    adicionarMensagem("Moradores reclamam da falta de saneamento básico.");
+  function construir(tipo) {
+    const custo = custos[tipo];
+    if (dinheiro < custo) {
+      adicionarMensagem(`❌ Dinheiro insuficiente para construir ${tipo}`);
+      return;
+    }
+
+    setDinheiro(d => d - custo);
+    setCidade(c => [...c, tipo]);
+
+    // Efeitos por tipo
+    switch (tipo) {
+      case "Casa": setPopulacao(p => p + 60); break;
+      case "Prédio": setPopulacao(p => p + 250); break;
+      case "Loja": setDinheiro(d => d + 400); break;
+      case "Shopping": 
+        setDinheiro(d => d + 1200);
+        setFelicidade(f => Math.min(100, f + 6));
+        break;
+      case "Hospital": setFelicidade(f => Math.min(100, f + 10)); break;
+      case "Escola": setFelicidade(f => Math.min(100, f + 7)); break;
+      case "Usina Solar":
+      case "Usina Eólica": setEnergia(e => Math.min(100, e + 22)); break;
+      case "Usina Nuclear": setEnergia(e => Math.min(100, e + 65)); break;
+      case "Saneamento Básico":
+        setSaneamento(s => Math.min(100, s + 25));
+        setFelicidade(f => Math.min(100, f + 6));
+        break;
+      case "Polícia Militar":
+      case "Polícia Civil":
+      case "Bombeiro Militar":
+        setSeguranca(s => Math.min(100, s + 16));
+        break;
+      case "Polícia Federal":
+      case "Base Naval":
+      case "Base Aérea":
+      case "Quartel do Exército":
+        setSeguranca(s => Math.min(100, s + 22));
+        break;
+      case "Ambulância": setFelicidade(f => Math.min(100, f + 5)); break;
+      case "Estação de Trem":
+        setFelicidade(f => Math.min(100, f + 8));
+        setDinheiro(d => d + 800);
+        break;
+      default: break;
+    }
+
+    adicionarMensagem(`🏗️ ${tipo} construído com sucesso!`);
   }
 
-  if (seguranca < 30) {
-    adicionarMensagem("A criminalidade aumentou na cidade.");
-  }
-}, 3000);
+  const noite = hora >= 18 || hora <= 5;
 
-return () => clearInterval(tempo);
+  return (
+    <div className={`min-h-screen transition-all duration-1000 p-6 ${noite 
+      ? "bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-900 text-white" 
+      : "bg-gradient-to-b from-blue-400 via-cyan-300 to-emerald-200 text-black"}`}>
+      
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-5xl font-bold tracking-tight">🌆 Cidade Aberta Brasil</h1>
+            <p className="text-xl mt-1">Horário: {hora.toString().padStart(2, '0')}:00 {noite ? "🌙 Noite" : "☀️ Dia"}</p>
+          </div>
 
-}, [energia, saneamento, seguranca, populacao]);
-
-function adicionarMensagem(msg) { setMensagens((antigas) => { const nova = [msg, ...antigas]; return nova.slice(0, 5); }); }
-
-function construir(tipo) { const custo = custos[tipo];
-
-if (dinheiro < custo) {
-  adicionarMensagem("Dinheiro insuficiente para construir " + tipo);
-  return;
-}
-
-setDinheiro((d) => d - custo);
-setCidade((c) => [...c, tipo]);
-
-switch (tipo) {
-  case "Casa":
-    setPopulacao((p) => p + 50);
-    break;
-
-  case "Prédio":
-    setPopulacao((p) => p + 200);
-    break;
-
-  case "Loja":
-    setDinheiro((d) => d + 300);
-    break;
-
-  case "Shopping":
-    setDinheiro((d) => d + 1000);
-    setFelicidade((f) => f + 4);
-    break;
-
-  case "Hospital":
-    setFelicidade((f) => f + 8);
-    break;
-
-  case "Escola":
-    setFelicidade((f) => f + 5);
-    break;
-
-  case "Usina Solar":
-  case "Usina Eólica":
-    setEnergia((e) => e + 20);
-    break;
-
-  case "Usina Nuclear":
-    setEnergia((e) => e + 60);
-    break;
-
-  case "Polícia Militar":
-  case "Polícia Civil":
-  case "Polícia Federal":
-  case "Bombeiro Militar":
-    setSeguranca((s) => s + 15);
-    break;
-
-  case "Ambulância":
-    setFelicidade((f) => f + 5);
-    break;
-
-  case "Saneamento Básico":
-    setSaneamento((s) => s + 20);
-    setFelicidade((f) => f + 5);
-    break;
-
-  case "Estação de Trem":
-    setFelicidade((f) => f + 6);
-    setDinheiro((d) => d + 500);
-    break;
-
-  case "Base Naval":
-  case "Base Aérea":
-  case "Quartel do Exército":
-    setSeguranca((s) => s + 20);
-    break;
-
-  default:
-    break;
-}
-
-adicionarMensagem(tipo + " construído com sucesso.");
-
-}
-
-const noite = hora >= 18 || hora <= 5;
-
-return ( <div className={min-h-screen transition-all duration-1000 p-6 ${ noite ? "bg-gradient-to-b from-slate-900 to-slate-700 text-white" : "bg-gradient-to-b from-sky-300 to-green-200 text-black" }} > <div className="max-w-7xl mx-auto"> <div className="flex justify-between items-center mb-6"> <div> <h1 className="text-4xl font-bold">Simulador de Cidade Aberta</h1> <p className="text-lg"> Horário: {hora}:00 {noite ? "🌙 Noite" : "☀️ Dia"} </p> </div>
-
-<div className="bg-white/20 backdrop-blur-lg rounded-3xl p-4 grid grid-cols-2 gap-4 text-sm">
-        <div>💰 Dinheiro: ${dinheiro}</div>
-        <div>👥 População: {populacao}</div>
-        <div>⚡ Energia: {energia}%</div>
-        <div>🛡 Segurança: {seguranca}%</div>
-        <div>🚿 Saneamento: {saneamento}%</div>
-        <div>😊 Felicidade: {felicidade}%</div>
-      </div>
-    </div>
-
-    <div className="grid md:grid-cols-3 gap-6">
-      <div className="bg-white/20 backdrop-blur-lg rounded-3xl p-4 h-fit">
-        <h2 className="text-2xl font-bold mb-4">Construções</h2>
-
-        <div className="grid gap-2 max-h-[650px] overflow-auto pr-2">
-          {edificios.map((item) => (
-            <button
-              key={item}
-              onClick={() => construir(item)}
-              className="p-3 rounded-2xl bg-black/20 hover:bg-black/40 transition text-left"
-            >
-              <div className="font-bold">{item}</div>
-              <div className="text-sm">Custo: ${custos[item]}</div>
-            </button>
-          ))}
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-5 grid grid-cols-3 md:grid-cols-6 gap-4 text-center text-sm font-medium">
+            <div>💰 <span className="block text-lg">${dinheiro.toLocaleString('pt-BR')}</span></div>
+            <div>👥 <span className="block text-lg">{populacao}</span></div>
+            <div>⚡ <span className="block text-lg">{energia}%</span></div>
+            <div>🛡️ <span className="block text-lg">{seguranca}%</span></div>
+            <div>🚿 <span className="block text-lg">{saneamento}%</span></div>
+            <div>😊 <span className="block text-lg">{felicidade}%</span></div>
+          </div>
         </div>
-      </div>
 
-      <div className="md:col-span-2 bg-white/20 backdrop-blur-lg rounded-3xl p-4">
-        <h2 className="text-2xl font-bold mb-4">Cidade</h2>
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Construções */}
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6">
+            <h2 className="text-2xl font-bold mb-4">🛠️ Construções</h2>
+            <div className="grid grid-cols-1 gap-2 max-h-[620px] overflow-auto pr-2 custom-scroll">
+              {edificios.map((item) => (
+                <button
+                  key={item}
+                  onClick={() => construir(item)}
+                  className="p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-left group"
+                >
+                  <div className="font-bold text-lg group-hover:translate-x-1 transition">{item}</div>
+                  <div className="text-sm opacity-75">Custo: R$ {custos[item].toLocaleString('pt-BR')}</div>
+                </button>
+              ))}
+            </div>
+          </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-h-[400px]">
-          {cidade.map((item, index) => (
-            <div
-              key={index}
-              className="rounded-2xl p-4 bg-black/20 flex flex-col items-center justify-center text-center shadow-lg"
-            >
-              <div className="text-3xl mb-2">
-                {item.includes("Casa") && "🏠"}
-                {item.includes("Prédio") && "🏢"}
-                {item.includes("Loja") && "🏪"}
-                {item.includes("Shopping") && "🏬"}
-                {item.includes("Hospital") && "🏥"}
-                {item.includes("Escola") && "🏫"}
-                {item.includes("Solar") && "☀️"}
-                {item.includes("Eólica") && "🌬️"}
-                {item.includes("Nuclear") && "☢️"}
-                {item.includes("Trem") && "🚉"}
-                {item.includes("Polícia") && "🚔"}
-                {item.includes("Bombeiro") && "🚒"}
-                {item.includes("Ambulância") && "🚑"}
-                {item.includes("Naval") && "⚓"}
-                {item.includes("Aérea") && "✈️"}
-                {item.includes("Quartel") && "🪖"}
-                {item.includes("Saneamento") && "🚿"}
+          {/* Cidade */}
+          <div className="lg:col-span-2 bg-white/10 backdrop-blur-xl rounded-3xl p-6">
+            <h2 className="text-2xl font-bold mb-4">🏙️ Sua Cidade</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[420px]">
+              {cidade.length === 0 ? (
+                <div className="col-span-full h-[400px] flex items-center justify-center text-2xl opacity-60">
+                  Comece construindo sua cidade!
+                </div>
+              ) : (
+                cidade.map((item, index) => (
+                  <div key={index} className="rounded-2xl p-5 bg-white/10 flex flex-col items-center justify-center text-center shadow-xl hover:scale-105 transition">
+                    <div className="text-5xl mb-3">
+                      {item.includes("Casa") && "🏠"}
+                      {item.includes("Prédio") && "🏢"}
+                      {item.includes("Loja") && "🏪"}
+                      {item.includes("Shopping") && "🏬"}
+                      {item.includes("Hospital") && "🏥"}
+                      {item.includes("Escola") && "🏫"}
+                      {item.includes("Solar") && "☀️"}
+                      {item.includes("Eólica") && "🌬️"}
+                      {item.includes("Nuclear") && "☢️"}
+                      {item.includes("Trem") && "🚉"}
+                      {item.includes("Polícia") && "🚔"}
+                      {item.includes("Bombeiro") && "🚒"}
+                      {item.includes("Ambulância") && "🚑"}
+                      {item.includes("Naval") && "⚓"}
+                      {item.includes("Aérea") && "✈️"}
+                      {item.includes("Quartel") && "🪖"}
+                      {item.includes("Saneamento") && "🚿"}
+                    </div>
+                    <div className="font-semibold">{item}</div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Reclamações + Administração */}
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6">
+            <h2 className="text-2xl font-bold mb-4">📢 Reclamações da População</h2>
+            <div className="space-y-3">
+              {mensagens.map((msg, i) => (
+                <div key={i} className="p-4 rounded-2xl bg-white/10">
+                  {msg}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6">
+            <h2 className="text-2xl font-bold mb-4">📋 Dicas</h2>
+            <div className="space-y-4 text-sm">
+              <div className="p-4 rounded-2xl bg-white/10">
+                Quanto maior a <strong>felicidade</strong>, maior o lucro da cidade.
               </div>
-
-              <div className="font-semibold text-sm">{item}</div>
+              <div className="p-4 rounded-2xl bg-white/10">
+                Mantenha <strong>energia</strong>, <strong>saneamento</strong> e <strong>segurança</strong> acima de 40% para evitar problemas.
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
-
-    <div className="grid md:grid-cols-2 gap-6 mt-6">
-      <div className="bg-white/20 backdrop-blur-lg rounded-3xl p-4">
-        <h2 className="text-2xl font-bold mb-4">Reclamações da Cidade</h2>
-
-        <div className="space-y-2">
-          {mensagens.map((msg, index) => (
-            <div
-              key={index}
-              className="p-3 rounded-2xl bg-black/20"
-            >
-              {msg}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-white/20 backdrop-blur-lg rounded-3xl p-4">
-        <h2 className="text-2xl font-bold mb-4">Administração</h2>
-
-        <div className="space-y-3 text-sm">
-          <div className="p-3 rounded-2xl bg-black/20">
-            Prefeitos de bairros economicamente estáveis geram lucro extra para a cidade.
-          </div>
-
-          <div className="p-3 rounded-2xl bg-black/20">
-            Sistemas disponíveis:
-            <ul className="list-disc ml-5 mt-2">
-              <li>Energia elétrica, solar, eólica e nuclear</li>
-              <li>Saneamento básico</li>
-              <li>Transporte ferroviário</li>
-              <li>Segurança pública completa</li>
-              <li>Bases militares nacionais</li>
-              <li>Economia automática baseada na população</li>
-            </ul>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-black/20">
-            Quanto maior a felicidade da população, maior o lucro da cidade.
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-); }
+  );
+}
