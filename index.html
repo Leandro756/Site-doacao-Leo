@@ -3,143 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixel City Builder - Rio de Janeiro Aberto</title>
-  <style>
-    body { font-family: 'Courier New', monospace; background: #0b0e17; color: #0f0; margin:0; padding:20px; }
-    #game { display: flex; gap: 20px; }
-    #map { 
-      width: 800px; height: 600px; 
-      background: linear-gradient(#1e3a2f, #2a5a4a);
-      border: 4px solid #ffcc00;
-      position: relative;
-      overflow: hidden;
-      image-rendering: pixelated;
-    }
-    .building { position: absolute; width: 60px; height: 80px; background: #c00; border: 2px solid #ff0; cursor: pointer; }
-    .road { position: absolute; background: #333; }
-    .info { background: #111; padding: 15px; width: 320px; border: 3px solid #0f0; }
-    button { background: #0f0; color: #000; padding: 10px; margin: 5px; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { background: #ff0; }
-  </style>
+  <title>Build City BR</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🌆 PIXEL CITY BUILDER - Sua Cidade Brasileira</h1>
-  <div id="game">
-    <div id="map"></div>
-    
-    <div class="info">
-      <h2>📊 Status da Cidade</h2>
-      <p>💰 Dinheiro: <span id="money">125000</span></p>
-      <p>👥 População: <span id="population">1240</span></p>
-      <p>⚡ Energia: <span id="energy">87</span>%</p>
-      <p>🗑️ Saneamento: <span id="sanitation">65</span>%</p>
-      <p>😊 Satisfação: <span id="happiness">72</span>%</p>
-      <p>🌞 Hora: <span id="time">14:37</span> (Dia)</p>
-      
-      <hr>
-      <h3>🏗️ Construir</h3>
-      <button onclick="build('house')">🏠 Casa (R$8.000)</button>
-      <button onclick="build('store')">🛒 Loja (R$25.000)</button>
-      <button onclick="build('power')">⚡ Usina Elétrica (R$60.000)</button>
-      <button onclick="build('wind')">🌬️ Eólica (R$45.000)</button>
-      <button onclick="build('hospital')">🏥 Hospital (R$120.000)</button>
-      <button onclick="build('police')">🚔 Delegacia (R$35.000)</button>
-      
-      <hr>
-      <h3>👮 Forças de Segurança</h3>
-      <button onclick="build('pm')">PM</button>
-      <button onclick="build('pf')">PF</button>
-      <button onclick="build('bombeiro')">🚒 Bombeiro</button>
-      
-      <hr>
-      <button onclick="nextDay()" style="background:#f80;width:100%">⏭️ Avançar Dia</button>
+  <div class="game-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="time">14:43</div>
+      <div class="money">R$ <span id="money">156370</span></div>
+      <div class="population">👥 204</div>
+      <div class="happiness">❤️ 129/100</div>
     </div>
+
+    <!-- Left Menu -->
+    <div class="left-menu" id="menu">
+      <!-- Categorias serão inseridas via JS -->
+    </div>
+
+    <!-- Game View -->
+    <div class="game-view" id="game-view">
+      <canvas id="city-canvas"></canvas>
+      <div class="time-of-day" id="time-of-day">Evening</div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <button class="btn-stats">📊 STATS</button>
+      <button class="btn-demolish" id="demolish-btn">🗑 DEMOLIR</button>
+    </div>
+
+    <!-- Complaints -->
+    <div class="complaints" id="complaints">
+      <h3>🚨 RECLAMAÇÕES (3)</h3>
+      <div class="complaint">Necessitamos de mais policiais!</div>
+      <div class="complaint">Poluição do ar muito alta!</div>
+      <div class="complaint">Criminalidade alta na zona leste!</div>
+    </div>
+
+    <!-- Build Button -->
+    <button class="build-btn">+</button>
   </div>
 
-  <script>
-    let money = 125000;
-    let population = 1240;
-    let energy = 87;
-    let sanitation = 65;
-    let happiness = 72;
-    let hour = 14;
-    let buildings = [];
-
-    const map = document.getElementById('map');
-
-    function updateUI() {
-      document.getElementById('money').textContent = money.toLocaleString('pt-BR');
-      document.getElementById('population').textContent = population;
-      document.getElementById('energy').textContent = energy;
-      document.getElementById('sanitation').textContent = sanitation;
-      document.getElementById('happiness').textContent = happiness;
-      document.getElementById('time').textContent = `${hour.toString().padStart(2,'0')}:00`;
-    }
-
-    function build(type) {
-      let cost = 0;
-      let name = "";
-      
-      switch(type) {
-        case 'house': cost = 8000; name = "🏠 Casa"; break;
-        case 'store': cost = 25000; name = "🛒 Loja"; break;
-        case 'power': cost = 60000; name = "⚡ Usina"; energy += 25; break;
-        case 'wind': cost = 45000; name = "🌬️ Eólica"; energy += 18; break;
-        case 'hospital': cost = 120000; name = "🏥 Hospital"; happiness += 12; break;
-        case 'police': cost = 35000; name = "🚔 Delegacia"; happiness += 8; break;
-        case 'pm': cost = 28000; name = "PM"; break;
-      }
-      
-      if (money >= cost) {
-        money -= cost;
-        const b = document.createElement('div');
-        b.className = 'building';
-        b.style.left = Math.random() * 700 + 'px';
-        b.style.top = Math.random() * 500 + 'px';
-        b.innerHTML = name;
-        map.appendChild(b);
-        buildings.push(b);
-        
-        population += Math.floor(Math.random() * 80) + 30;
-        happiness = Math.min(100, happiness + 3);
-        updateUI();
-        
-        alert(`✅ ${name} construída!`);
-      } else {
-        alert("💸 Dinheiro insuficiente!");
-      }
-    }
-
-    function nextDay() {
-      hour = (hour + 8) % 24;
-      const isNight = hour < 6 || hour > 18;
-      
-      money += Math.floor(population * 1.8) + (energy > 70 ? 8000 : 0);
-      happiness = Math.max(40, happiness - 2 + (energy > 80 ? 5 : 0));
-      
-      if (Math.random() > 0.7) {
-        alert("📢 Reclamação dos cidadãos: 'Falta mais saneamento!'");
-        sanitation = Math.max(30, sanitation - 8);
-      }
-      
-      updateUI();
-    }
-
-    // Início
-    updateUI();
-    
-    // Construções iniciais (inspirado nas imagens)
-    setTimeout(() => {
-      for(let i = 0; i < 8; i++) {
-        const b = document.createElement('div');
-        b.className = 'building';
-        b.style.left = (100 + i*80) + 'px';
-        b.style.top = '180px';
-        b.innerHTML = i % 3 === 0 ? '🏠' : '🏢';
-        map.appendChild(b);
-      }
-      alert("🌆 Bem-vindo à sua cidade! Você começa com R$125.000 e uma pequena vila inspirada em Copacabana + Tóquio pixel.");
-    }, 800);
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
