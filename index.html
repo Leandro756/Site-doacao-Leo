@@ -1,231 +1,186 @@
-export default function CidadeAbertaBrasil() {
-  const React = window.React;
-  const { useState, useEffect } = React;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cidade Aberta Brasil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    body { font-family: system-ui, sans-serif; }
+    .custom-scroll::-webkit-scrollbar { width: 6px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-blue-400 via-cyan-300 to-emerald-200 text-black transition-all duration-1000">
 
-  const edificios = [
-    "Casa", "Prédio", "Loja", "Shopping", "Hospital", "Escola",
-    "Usina Solar", "Usina Eólica", "Usina Nuclear",
-    "Estação de Trem", "Polícia Militar", "Polícia Civil",
-    "Polícia Federal", "Bombeiro Militar", "Ambulância",
-    "Base Naval", "Base Aérea", "Quartel do Exército",
-    "Saneamento Básico"
-  ];
+<div class="max-w-7xl mx-auto p-6">
+  <h1 class="text-5xl font-bold text-center mb-2">🌆 Cidade Aberta Brasil</h1>
+  <p id="hora" class="text-center text-xl mb-8"></p>
 
-  const custos = {
-    "Casa": 500, "Prédio": 1500, "Loja": 1000, "Shopping": 4000,
-    "Hospital": 5000, "Escola": 2500,
-    "Usina Solar": 3500, "Usina Eólica": 4500, "Usina Nuclear": 12000,
-    "Estação de Trem": 6000,
-    "Polícia Militar": 2800, "Polícia Civil": 2800, "Polícia Federal": 4200,
-    "Bombeiro Militar": 3000, "Ambulância": 2000,
-    "Base Naval": 10000, "Base Aérea": 10000, "Quartel do Exército": 9000,
-    "Saneamento Básico": 3200
-  };
+  <div class="grid grid-cols-3 md:grid-cols-6 gap-4 bg-white/20 backdrop-blur-xl rounded-3xl p-6 mb-8 text-center">
+    <div><strong>💰</strong><br><span id="dinheiro">50000</span></div>
+    <div><strong>👥</strong><br><span id="populacao">1200</span></div>
+    <div><strong>⚡</strong><br><span id="energia">50</span>%</div>
+    <div><strong>🛡️</strong><br><span id="seguranca">40</span>%</div>
+    <div><strong>🚿</strong><br><span id="saneamento">35</span>%</div>
+    <div><strong>😊</strong><br><span id="felicidade">60</span>%</div>
+  </div>
 
-  const [dinheiro, setDinheiro] = useState(50000);
-  const [populacao, setPopulacao] = useState(1200);
-  const [energia, setEnergia] = useState(50);
-  const [seguranca, setSeguranca] = useState(40);
-  const [saneamento, setSaneamento] = useState(35);
-  const [felicidade, setFelicidade] = useState(60);
-  const [hora, setHora] = useState(8);
-  const [cidade, setCidade] = useState([]);
-  const [mensagens, setMensagens] = useState([
-    "Bem-vindo a Cidade Aberta Brasil!",
-    "A população quer mais saneamento."
-  ]);
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Construções -->
+    <div class="bg-white/20 backdrop-blur-xl rounded-3xl p-6">
+      <h2 class="text-2xl font-bold mb-4">🛠️ Construções</h2>
+      <div id="construcoes" class="grid gap-2 max-h-[620px] overflow-auto custom-scroll"></div>
+    </div>
 
-  // Timer principal
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHora((h) => (h + 1) % 24);
+    <!-- Cidade -->
+    <div class="lg:col-span-2 bg-white/20 backdrop-blur-xl rounded-3xl p-6">
+      <h2 class="text-2xl font-bold mb-4">🏙️ Sua Cidade</h2>
+      <div id="cidade" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[420px]"></div>
+    </div>
+  </div>
 
-      // Geração de dinheiro (baseada em população + felicidade)
-      const lucroBase = Math.floor(populacao / 12);
-      const bonusFelicidade = Math.floor((felicidade - 50) / 3);
-      setDinheiro(d => d + Math.max(50, lucroBase + bonusFelicidade));
-
-      // Eventos aleatórios
-      if (Math.random() < 0.15) {
-        const eventos = [
-          "Um festival aumentou a felicidade da cidade!",
-          "Chuva forte causou alagamento em alguns bairros.",
-          "Investidores estrangeiros visitaram a cidade.",
-          "Uma onda de calor aumentou o consumo de energia."
-        ];
-        adicionarMensagem(eventos[Math.floor(Math.random() * eventos.length)]);
-      }
-
-      // Penalidades
-      if (energia < 25) setFelicidade(f => Math.max(0, f - 3));
-      if (saneamento < 30) setFelicidade(f => Math.max(0, f - 2));
-      if (seguranca < 30) setFelicidade(f => Math.max(0, f - 4));
-
-    }, 2500);
-
-    return () => clearInterval(interval);
-  }, [populacao, felicidade]);
-
-  function adicionarMensagem(msg) {
-    setMensagens(m => [msg, ...m].slice(0, 6));
-  }
-
-  function construir(tipo) {
-    const custo = custos[tipo];
-    if (dinheiro < custo) {
-      adicionarMensagem(`❌ Dinheiro insuficiente para construir ${tipo}`);
-      return;
-    }
-
-    setDinheiro(d => d - custo);
-    setCidade(c => [...c, tipo]);
-
-    // Efeitos por tipo
-    switch (tipo) {
-      case "Casa": setPopulacao(p => p + 60); break;
-      case "Prédio": setPopulacao(p => p + 250); break;
-      case "Loja": setDinheiro(d => d + 400); break;
-      case "Shopping": 
-        setDinheiro(d => d + 1200);
-        setFelicidade(f => Math.min(100, f + 6));
-        break;
-      case "Hospital": setFelicidade(f => Math.min(100, f + 10)); break;
-      case "Escola": setFelicidade(f => Math.min(100, f + 7)); break;
-      case "Usina Solar":
-      case "Usina Eólica": setEnergia(e => Math.min(100, e + 22)); break;
-      case "Usina Nuclear": setEnergia(e => Math.min(100, e + 65)); break;
-      case "Saneamento Básico":
-        setSaneamento(s => Math.min(100, s + 25));
-        setFelicidade(f => Math.min(100, f + 6));
-        break;
-      case "Polícia Militar":
-      case "Polícia Civil":
-      case "Bombeiro Militar":
-        setSeguranca(s => Math.min(100, s + 16));
-        break;
-      case "Polícia Federal":
-      case "Base Naval":
-      case "Base Aérea":
-      case "Quartel do Exército":
-        setSeguranca(s => Math.min(100, s + 22));
-        break;
-      case "Ambulância": setFelicidade(f => Math.min(100, f + 5)); break;
-      case "Estação de Trem":
-        setFelicidade(f => Math.min(100, f + 8));
-        setDinheiro(d => d + 800);
-        break;
-      default: break;
-    }
-
-    adicionarMensagem(`🏗️ ${tipo} construído com sucesso!`);
-  }
-
-  const noite = hora >= 18 || hora <= 5;
-
-  return (
-    <div className={`min-h-screen transition-all duration-1000 p-6 ${noite 
-      ? "bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-900 text-white" 
-      : "bg-gradient-to-b from-blue-400 via-cyan-300 to-emerald-200 text-black"}`}>
-      
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-5xl font-bold tracking-tight">🌆 Cidade Aberta Brasil</h1>
-            <p className="text-xl mt-1">Horário: {hora.toString().padStart(2, '0')}:00 {noite ? "🌙 Noite" : "☀️ Dia"}</p>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-5 grid grid-cols-3 md:grid-cols-6 gap-4 text-center text-sm font-medium">
-            <div>💰 <span className="block text-lg">${dinheiro.toLocaleString('pt-BR')}</span></div>
-            <div>👥 <span className="block text-lg">{populacao}</span></div>
-            <div>⚡ <span className="block text-lg">{energia}%</span></div>
-            <div>🛡️ <span className="block text-lg">{seguranca}%</span></div>
-            <div>🚿 <span className="block text-lg">{saneamento}%</span></div>
-            <div>😊 <span className="block text-lg">{felicidade}%</span></div>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Construções */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6">
-            <h2 className="text-2xl font-bold mb-4">🛠️ Construções</h2>
-            <div className="grid grid-cols-1 gap-2 max-h-[620px] overflow-auto pr-2 custom-scroll">
-              {edificios.map((item) => (
-                <button
-                  key={item}
-                  onClick={() => construir(item)}
-                  className="p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition-all text-left group"
-                >
-                  <div className="font-bold text-lg group-hover:translate-x-1 transition">{item}</div>
-                  <div className="text-sm opacity-75">Custo: R$ {custos[item].toLocaleString('pt-BR')}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Cidade */}
-          <div className="lg:col-span-2 bg-white/10 backdrop-blur-xl rounded-3xl p-6">
-            <h2 className="text-2xl font-bold mb-4">🏙️ Sua Cidade</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[420px]">
-              {cidade.length === 0 ? (
-                <div className="col-span-full h-[400px] flex items-center justify-center text-2xl opacity-60">
-                  Comece construindo sua cidade!
-                </div>
-              ) : (
-                cidade.map((item, index) => (
-                  <div key={index} className="rounded-2xl p-5 bg-white/10 flex flex-col items-center justify-center text-center shadow-xl hover:scale-105 transition">
-                    <div className="text-5xl mb-3">
-                      {item.includes("Casa") && "🏠"}
-                      {item.includes("Prédio") && "🏢"}
-                      {item.includes("Loja") && "🏪"}
-                      {item.includes("Shopping") && "🏬"}
-                      {item.includes("Hospital") && "🏥"}
-                      {item.includes("Escola") && "🏫"}
-                      {item.includes("Solar") && "☀️"}
-                      {item.includes("Eólica") && "🌬️"}
-                      {item.includes("Nuclear") && "☢️"}
-                      {item.includes("Trem") && "🚉"}
-                      {item.includes("Polícia") && "🚔"}
-                      {item.includes("Bombeiro") && "🚒"}
-                      {item.includes("Ambulância") && "🚑"}
-                      {item.includes("Naval") && "⚓"}
-                      {item.includes("Aérea") && "✈️"}
-                      {item.includes("Quartel") && "🪖"}
-                      {item.includes("Saneamento") && "🚿"}
-                    </div>
-                    <div className="font-semibold">{item}</div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Reclamações + Administração */}
-        <div className="grid md:grid-cols-2 gap-6 mt-6">
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6">
-            <h2 className="text-2xl font-bold mb-4">📢 Reclamações da População</h2>
-            <div className="space-y-3">
-              {mensagens.map((msg, i) => (
-                <div key={i} className="p-4 rounded-2xl bg-white/10">
-                  {msg}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6">
-            <h2 className="text-2xl font-bold mb-4">📋 Dicas</h2>
-            <div className="space-y-4 text-sm">
-              <div className="p-4 rounded-2xl bg-white/10">
-                Quanto maior a <strong>felicidade</strong>, maior o lucro da cidade.
-              </div>
-              <div className="p-4 rounded-2xl bg-white/10">
-                Mantenha <strong>energia</strong>, <strong>saneamento</strong> e <strong>segurança</strong> acima de 40% para evitar problemas.
-              </div>
-            </div>
-          </div>
-        </div>
+  <div class="grid md:grid-cols-2 gap-6 mt-6">
+    <div class="bg-white/20 backdrop-blur-xl rounded-3xl p-6">
+      <h2 class="text-2xl font-bold mb-4">📢 Reclamações</h2>
+      <div id="mensagens" class="space-y-3"></div>
+    </div>
+    <div class="bg-white/20 backdrop-blur-xl rounded-3xl p-6">
+      <h2 class="text-2xl font-bold mb-4">📋 Dicas</h2>
+      <div class="space-y-4 text-sm">
+        <div class="p-4 rounded-2xl bg-white/10">Quanto maior a felicidade, maior o lucro.</div>
+        <div class="p-4 rounded-2xl bg-white/10">Mantenha energia, saneamento e segurança acima de 40%.</div>
       </div>
     </div>
-  );
+  </div>
+</div>
+
+<script>
+// === Variáveis do jogo ===
+let dinheiro = 50000;
+let populacao = 1200;
+let energia = 50;
+let seguranca = 40;
+let saneamento = 35;
+let felicidade = 60;
+let hora = 8;
+let cidade = [];
+let mensagens = ["Bem-vindo a Cidade Aberta Brasil!"];
+
+const edificios = ["Casa","Prédio","Loja","Shopping","Hospital","Escola","Usina Solar","Usina Eólica","Usina Nuclear","Estação de Trem","Polícia Militar","Polícia Civil","Polícia Federal","Bombeiro Militar","Ambulância","Base Naval","Base Aérea","Quartel do Exército","Saneamento Básico"];
+
+const custos = {"Casa":500,"Prédio":1500,"Loja":1000,"Shopping":4000,"Hospital":5000,"Escola":2500,"Usina Solar":3500,"Usina Eólica":4500,"Usina Nuclear":12000,"Estação de Trem":6000,"Polícia Militar":2800,"Polícia Civil":2800,"Polícia Federal":4200,"Bombeiro Militar":3000,"Ambulância":2000,"Base Naval":10000,"Base Aérea":10000,"Quartel do Exército":9000,"Saneamento Básico":3200};
+
+// Atualiza tela
+function atualizarTela() {
+  document.getElementById('dinheiro').textContent = dinheiro.toLocaleString('pt-BR');
+  document.getElementById('populacao').textContent = populacao;
+  document.getElementById('energia').textContent = energia;
+  document.getElementById('seguranca').textContent = seguranca;
+  document.getElementById('saneamento').textContent = saneamento;
+  document.getElementById('felicidade').textContent = felicidade;
+  document.getElementById('hora').textContent = `${hora.toString().padStart(2,'0')}:00 ${hora >= 18 || hora <= 5 ? '🌙 Noite' : '☀️ Dia'}`;
+
+  // Cidade
+  const divCidade = document.getElementById('cidade');
+  divCidade.innerHTML = '';
+  if (cidade.length === 0) {
+    divCidade.innerHTML = `<div class="col-span-full h-80 flex items-center justify-center text-2xl opacity-70">Comece construindo sua cidade!</div>`;
+  } else {
+    cidade.forEach(item => {
+      const emoji = {
+        "Casa": "🏠", "Prédio": "🏢", "Loja": "🏪", "Shopping": "🏬", "Hospital": "🏥",
+        "Escola": "🏫", "Usina Solar": "☀️", "Usina Eólica": "🌬️", "Usina Nuclear": "☢️",
+        "Estação de Trem": "🚉", "Saneamento Básico": "🚿"
+      }[item] || "🏗️";
+      
+      divCidade.innerHTML += `
+        <div class="rounded-2xl p-5 bg-white/10 flex flex-col items-center justify-center text-center hover:scale-105 transition">
+          <div class="text-5xl mb-3">${emoji}</div>
+          <div class="font-semibold">${item}</div>
+        </div>`;
+    });
+  }
+
+  // Mensagens
+  const divMsg = document.getElementById('mensagens');
+  divMsg.innerHTML = '';
+  mensagens.forEach(msg => {
+    divMsg.innerHTML += `<div class="p-4 rounded-2xl bg-white/10">${msg}</div>`;
+  });
 }
+
+// Construir
+function construir(tipo) {
+  const custo = custos[tipo];
+  if (dinheiro < custo) {
+    adicionarMensagem(`❌ Dinheiro insuficiente para ${tipo}`);
+    return;
+  }
+
+  dinheiro -= custo;
+  cidade.push(tipo);
+
+  // Efeitos
+  if (tipo === "Casa") populacao += 60;
+  else if (tipo === "Prédio") populacao += 250;
+  else if (tipo === "Loja") dinheiro += 400;
+  else if (tipo === "Shopping") { dinheiro += 1200; felicidade = Math.min(100, felicidade + 6); }
+  else if (tipo === "Hospital") felicidade = Math.min(100, felicidade + 10);
+  else if (tipo === "Escola") felicidade = Math.min(100, felicidade + 7);
+  else if (tipo === "Usina Solar" || tipo === "Usina Eólica") energia = Math.min(100, energia + 22);
+  else if (tipo === "Usina Nuclear") energia = Math.min(100, energia + 65);
+  else if (tipo === "Saneamento Básico") { saneamento = Math.min(100, saneamento + 25); felicidade = Math.min(100, felicidade + 6); }
+  else if (["Polícia Militar","Polícia Civil","Bombeiro Militar"].includes(tipo)) seguranca = Math.min(100, seguranca + 16);
+  else if (["Polícia Federal","Base Naval","Base Aérea","Quartel do Exército"].includes(tipo)) seguranca = Math.min(100, seguranca + 22);
+  else if (tipo === "Ambulância") felicidade = Math.min(100, felicidade + 5);
+  else if (tipo === "Estação de Trem") { felicidade = Math.min(100, felicidade + 8); dinheiro += 800; }
+
+  adicionarMensagem(`✅ ${tipo} construído com sucesso!`);
+  atualizarTela();
+}
+
+function adicionarMensagem(msg) {
+  mensagens.unshift(msg);
+  if (mensagens.length > 6) mensagens.pop();
+}
+
+// Cria botões de construção
+function criarBotoes() {
+  const container = document.getElementById('construcoes');
+  container.innerHTML = '';
+  edificios.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = "p-4 rounded-2xl bg-white/10 hover:bg-white/20 transition text-left w-full";
+    btn.innerHTML = `
+      <div class="font-bold">${item}</div>
+      <div class="text-sm opacity-75">R$ ${custos[item].toLocaleString('pt-BR')}</div>
+    `;
+    btn.onclick = () => construir(item);
+    container.appendChild(btn);
+  });
+}
+
+// Timer do jogo
+setInterval(() => {
+  hora = (hora + 1) % 24;
+
+  // Gera dinheiro
+  const lucro = Math.floor(populacao / 12) + Math.floor((felicidade - 50) / 3);
+  dinheiro += Math.max(80, lucro);
+
+  // Penalidades
+  if (energia < 25) felicidade = Math.max(0, felicidade - 3);
+  if (saneamento < 30) felicidade = Math.max(0, felicidade - 2);
+  if (seguranca < 30) felicidade = Math.max(0, felicidade - 4);
+
+  atualizarTela();
+}, 3000);
+
+// Inicializa
+criarBotoes();
+atualizarTela();
+</script>
+</body>
+</html>
