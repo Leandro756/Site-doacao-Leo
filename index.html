@@ -7,12 +7,130 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Top Bar -->
+    <!-- digestão -->
+
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak, Table, TableStyle
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+import os
+
+# Register Arial if possible, fallback to Helvetica
+try:
+    pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'))
+    font_name = 'Arial'
+except:
+    font_name = 'Helvetica'
+
+doc = SimpleDocTemplate(
+    "digestao_alimentos.pdf",
+    pagesize=A4,
+    leftMargin=3*cm,
+    rightMargin=3*cm,
+    topMargin=3*cm,
+    bottomMargin=3*cm
+)
+
+styles = getSampleStyleSheet()
+styles.add(ParagraphStyle(
+    name='CustomNormal',
+    parent=styles['Normal'],
+    fontName=font_name,
+    fontSize=10,
+    leading=15,  # 1.5 spacing approx
+    firstLineIndent=1.25*cm,
+    alignment=4  # Justified
+))
+styles.add(ParagraphStyle(
+    name='Title',
+    parent=styles['Title'],
+    fontName=font_name,
+    fontSize=14,
+    leading=18,
+    spaceAfter=12
+))
+styles.add(ParagraphStyle(
+    name='Heading1',
+    parent=styles['Heading1'],
+    fontName=font_name,
+    fontSize=12,
+    leading=14,
+    spaceBefore=12,
+    spaceAfter=6
+))
+
+story = []
+
+# Page 1
+story.append(Paragraph("Digestão de Alimentos", styles['Title']))
+story.append(Spacer(1, 12))
+
+img_path = "/home/workdir/attachments/1000310808.jpg"
+if os.path.exists(img_path):
+    img = Image(img_path, width=12*cm, height=12*cm * (493/600))  # approximate aspect
+    story.append(img)
+    story.append(Spacer(1, 12))
+    story.append(Paragraph("Figura 1: Sistema digestório humano e detalhe das microvilosidades.", styles['CustomNormal']))
+
+story.append(Spacer(1, 24))
+story.append(Paragraph("Introdução", styles['Heading1']))
+intro = """A digestão de alimentos é um processo fundamental para a sobrevivência dos seres vivos, permitindo a transformação dos nutrientes em formas utilizáveis pelo organismo. Este trabalho aborda como ocorre a digestão, sua finalidade, importância e as principais reações químicas balanceadas envolvidas."""
+story.append(Paragraph(intro, styles['CustomNormal']))
+
+story.append(PageBreak())
+
+# Page 2 - The provided text
+story.append(Paragraph("Como ocorre a digestão?", styles['Heading1']))
+
+text_p2 = """O sistema digestivo é composto pelo trato gastrointestinal — também chamado de trato GI ou trato digestivo — e pelo fígado, pâncreas e vesícula biliar. O trato GI é uma série de órgãos ocos unidos em um tubo longo e sinuoso que se estende da boca ao ânus. Os órgãos ocos que compõem o trato GI são a boca, o esôfago, o estômago, o intestino delgado, o intestino grosso e o ânus. O fígado, o pâncreas e a vesícula biliar são os órgãos sólidos do sistema digestivo.
+
+O intestino delgado é composto por três partes. A primeira parte é chamada de duodeno. O jejuno fica no meio e o íleo, no final. O intestino grosso inclui o apêndice, o ceco, o cólon e o reto. O apêndice é uma bolsa em forma de dedo ligada ao ceco. O ceco é a primeira parte do intestino grosso. O cólon vem em seguida. O reto é a parte final do intestino grosso.
+
+As bactérias do seu trato gastrointestinal, também chamadas de flora intestinal ou microbioma, auxiliam na digestão. Partes dos seus sistemas nervoso e circulatório também contribuem para esse processo. Trabalhando em conjunto, nervos, hormônios, bactérias, sangue e os órgãos do seu sistema digestivo digerem os alimentos e líquidos que você ingere diariamente."""
+
+story.append(Paragraph(text_p2, styles['CustomNormal']))
+
+story.append(PageBreak())
+
+# Page 3
+story.append(Paragraph("Etapas da Digestão", styles['Heading1']))
+etapas = """A digestão ocorre em duas formas principais: mecânica (mastigação, peristaltismo) e química (enzimas que catalisam a hidrólise de macromoléculas). Na boca, a amilase salivar inicia a quebra de amidos. No estômago, o ácido clorídrico e a pepsina atuam nas proteínas. No intestino delgado, enzimas pancreáticas e intestinais completam a digestão de carboidratos, proteínas e lipídios."""
+story.append(Paragraph(etapas, styles['CustomNormal']))
+
+story.append(PageBreak())
+
+# Page 4
+story.append(Paragraph("Para que serve e Importância", styles['Heading1']))
+importancia = """A digestão serve para transformar alimentos complexos em moléculas simples (glicose, aminoácidos, ácidos graxos) que podem ser absorvidas e utilizadas para energia, crescimento e manutenção do organismo. Sua importância reside na nutrição adequada, prevenção de deficiências e suporte ao metabolismo. Sem uma digestão eficiente, o corpo não consegue extrair os nutrientes necessários, levando a problemas de saúde."""
+story.append(Paragraph(importancia, styles['CustomNormal']))
+
+story.append(PageBreak())
+
+# Page 5
+story.append(Paragraph("Reações Balanceadas", styles['Heading1']))
+reacoes = """Exemplos de reações de hidrólise:
+
+1. Hidrólise de amido (carboidratos):
+(C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>)<sub>n</sub> + n H<sub>2</sub>O → n C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (glicose)
+
+2. Hidrólise de proteínas:
+Proteína + n H<sub>2</sub>O → aminoácidos
+
+Essas reações são catalisadas por enzimas específicas em diferentes partes do sistema digestivo."""
+story.append(Paragraph(reacoes, styles['CustomNormal']))
+
+story.append(Spacer(1, 12))
+story.append(Paragraph("Conclusão", styles['Heading1']))
+conclusao = """A digestão é um processo químico e mecânico essencial à vida, garantindo a absorção de nutrientes e o funcionamento adequado do organismo."""
+story.append(Paragraph(conclusao, styles['CustomNormal']))
+
+doc.build(story)
+print("PDF generated successfully with 5 pages.")
+
  
-
-
-
-
     <!-- Left Menu -->
 
   </div>
