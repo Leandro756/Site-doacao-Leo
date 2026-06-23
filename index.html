@@ -1,26 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Progressão</title>
-<style>
-body{
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#87CEFA; /* Azul claro */
-    font-family:Arial, sans-serif;
-}
-
-h1{
-    font-size:80px;
-    color:#003366; /* Azul escuro */
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conectar Caixa de Som</title>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 20px; background: #1e1e1e; color: white; }
+    button { padding: 15px 30px; font-size: 18px; margin: 10px; border: none; border-radius: 10px; }
+    #status { margin: 20px; font-size: 16px; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 15px; background: #333; margin: 10px; border-radius: 8px; cursor: pointer; }
+  </style>
 </head>
 <body>
-    <h1>Progressão</h1>
+  <h1>🔊 Conectar Caixa de Som</h1>
+  <button onclick="scanDevices()">🔍 Escanear Dispositivos Bluetooth</button>
+  <div id="status"></div>
+  <ul id="devices"></ul>
+
+  <script>
+    let deviceCache = null;
+
+    async function scanDevices() {
+      const status = document.getElementById('status');
+      const list = document.getElementById('devices');
+      list.innerHTML = '';
+      status.textContent = 'Escaneando... (permita no navegador)';
+
+      try {
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['battery_service'] // exemplo, pode mudar
+        });
+
+        status.textContent = `Encontrado: ${device.name || 'Dispositivo desconhecido'}`;
+        
+        const li = document.createElement('li');
+        li.textContent = `📱 ${device.name || 'Caixa de Som'} - Conectar`;
+        li.onclick = () => connectToDevice(device);
+        list.appendChild(li);
+
+      } catch (error) {
+        status.textContent = 'Erro: ' + error.message + '\n\nDica: Use Chrome no Android';
+      }
+    }
+
+    async function connectToDevice(device) {
+      const status = document.getElementById('status');
+      try {
+        const server = await device.gatt.connect();
+        status.textContent = `✅ Conectado em ${device.name}!`;
+        // Aqui você poderia controlar características se for BLE
+      } catch (err) {
+        status.textContent = 'Falha na conexão: ' + err.message;
+      }
+    }
+  </script>
 </body>
 </html>
