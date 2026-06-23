@@ -3,56 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Conectar Caixa de Som</title>
+  <title>🔊 Caixas de Som</title>
   <style>
-    body { font-family: Arial; text-align: center; padding: 20px; background: #1e1e1e; color: white; }
-    button { padding: 15px 30px; font-size: 18px; margin: 10px; border: none; border-radius: 10px; }
-    #status { margin: 20px; font-size: 16px; }
-    ul { list-style: none; padding: 0; }
-    li { padding: 15px; background: #333; margin: 10px; border-radius: 8px; cursor: pointer; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #0a0a0a 0%, #1a0033 100%);
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      color: #bb86fc;
+      margin-bottom: 10px;
+      text-shadow: 0 0 15px rgba(187, 134, 252, 0.5);
+    }
+
+    p {
+      color: #888;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background: #6200ee;
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-size: 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(98, 0, 238, 0.4);
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #7f39fb;
+      transform: translateY(-2px);
+    }
+
+    #status {
+      margin: 25px 0;
+      font-size: 17px;
+      min-height: 50px;
+    }
+
+    #devices {
+      list-style: none;
+      padding: 0;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    li {
+      background: rgba(30, 30, 50, 0.9);
+      margin: 12px 0;
+      padding: 18px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px solid rgba(187, 134, 252, 0.2);
+    }
+
+    li:hover {
+      background: rgba(98, 0, 238, 0.2);
+      transform: scale(1.02);
+      border-color: #bb86fc;
+    }
+
+    .speaker-icon {
+      font-size: 28px;
+    }
+
+    .device-name {
+      font-size: 18px;
+      font-weight: 600;
+      text-align: left;
+      flex: 1;
+    }
   </style>
 </head>
 <body>
   <h1>🔊 Conectar Caixa de Som</h1>
-  <button onclick="scanDevices()">🔍 Escanear Dispositivos Bluetooth</button>
+  <p>Escaneie e conecte em qualquer caixa próxima</p>
+  
+  <button onclick="scanDevices()">🔍 Escanear Caixas de Som</button>
+  
   <div id="status"></div>
   <ul id="devices"></ul>
 
   <script>
-    let deviceCache = null;
-
     async function scanDevices() {
       const status = document.getElementById('status');
       const list = document.getElementById('devices');
       list.innerHTML = '';
-      status.textContent = 'Escaneando... (permita no navegador)';
+      status.textContent = 'Escaneando... Permita o Bluetooth no navegador';
 
       try {
         const device = await navigator.bluetooth.requestDevice({
           acceptAllDevices: true,
-          optionalServices: ['battery_service'] // exemplo, pode mudar
+          optionalServices: ['battery_service']
         });
 
-        status.textContent = `Encontrado: ${device.name || 'Dispositivo desconhecido'}`;
-        
+        status.textContent = `✅ Encontrado: ${device.name || 'Caixa de Som'}`;
+
         const li = document.createElement('li');
-        li.textContent = `📱 ${device.name || 'Caixa de Som'} - Conectar`;
+        li.innerHTML = `
+          <span class="speaker-icon">📢</span>
+          <div class="device-name">${device.name || 'Dispositivo Bluetooth'}</div>
+        `;
         li.onclick = () => connectToDevice(device);
         list.appendChild(li);
 
       } catch (error) {
-        status.textContent = 'Erro: ' + error.message + '\n\nDica: Use Chrome no Android';
+        status.innerHTML = `❌ Erro: ${error.message}<br><small>Use Chrome no Android para melhor resultado</small>`;
       }
     }
 
     async function connectToDevice(device) {
       const status = document.getElementById('status');
+      status.textContent = `Conectando em ${device.name || 'dispositivo'}...`;
+
       try {
         const server = await device.gatt.connect();
-        status.textContent = `✅ Conectado em ${device.name}!`;
-        // Aqui você poderia controlar características se for BLE
+        status.innerHTML = `✅ <strong>Conectado com sucesso!</strong><br>Caixa: ${device.name || 'Desconhecida'}`;
       } catch (err) {
-        status.textContent = 'Falha na conexão: ' + err.message;
+        status.textContent = `❌ Falha na conexão: ${err.message}`;
       }
     }
   </script>
