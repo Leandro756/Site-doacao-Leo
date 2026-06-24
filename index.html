@@ -1,0 +1,155 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:nfc_manager/nfc_manager.dart';
+import 'package:wifi_scan/wifi_scan.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+void main() {
+  runApp(const FlipperHackerApp());
+}
+
+class FlipperHackerApp extends StatelessWidget {
+  const FlipperHackerApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flipper Hacker',
+      theme: ThemeData.dark().copyWith(
+        primaryColor: Colors.deepPurpleAccent,
+        scaffoldBackgroundColor: const Color(0xFF050505),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.deepPurple,
+          centerTitle: true,
+        ),
+      ),
+      home: const HomeScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String status = "👋 Pronto para hackear\nToque em uma ferramenta";
+
+  Future<void> requestPermissions() async {
+    await [
+      Permission.bluetooth,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.locationWhenInUse,
+      Permission.nfc,
+    ].request();
+  }
+
+  Future<void> scanBluetooth() async {
+    setState(() => status = "🔍 Escaneando Bluetooth...");
+    await requestPermissions();
+
+    try {
+      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 8));
+      setState(() => status = "Escaneando... Veja os dispositivos próximos");
+    } catch (e) {
+      setState(() => status = "Erro Bluetooth: $e");
+    }
+  }
+
+  Future<void> readNFC() async {
+    setState(() => status = "📡 Aproxime um cartão ou tag NFC...");
+    await requestPermissions();
+
+    if (!await NfcManager.instance.isAvailable()) {
+      setState(() => status = "❌ NFC não suportado neste dispositivo");
+      return;
+    }
+
+    NfcManager.instance.startSession(
+      onDiscovered: (NfcTag tag) async {
+        setState(() => status = "✅ NFC detectado!\nID: ${tag.id}");
+        await Future.delayed(const Duration(seconds: 3));
+        NfcManager.instance.stopSession();
+      },
+    );
+  }
+
+  Future<void> scanWifi() async {
+    setState(() => status = "📶 Escaneando redes WiFi...");
+    await requestPermissions();
+
+    try {
+      final canScan = await WiFiScan.instance.canStartScan();
+      if (canScan == CanStartScan.yes) {
+        await WiFiScan.instance.startScan();
+        final results = await WiFiScan.instance.getScannedResults();
+        setState(() => status = "${results.length} redes WiFi encontradas!");
+      } else {
+        setState(() => status = "Ative a localização para escanear WiFi");
+      }
+    } catch (e) {
+      setState(() => status = "Erro WiFi: $e");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🔧 Flipper Hacker'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.deepPurpleAccent.withOpacity(0.4)),
+              ),
+              child: Text(
+                status,
+                style: const TextStyle(fontSize: 17, height: 1.5),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 40),
+            _buildToolButton(Icons.bluetooth, "Bluetooth Scanner", scanBluetooth),
+            _buildToolButton(Icons.nfc, "NFC / RFID Reader", readNFC),
+            _buildToolButton(Icons.wifi, "WiFi Scanner", scanWifi),
+            _buildToolButton(Icons.settings_remote, "Infravermelho", () {
+              setState(() => status = "IR limitado no celular.\nFunciona melhor com hardware externo.");
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildToolButton(IconData icon, String title, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: ElevatedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, size: 30),
+        label: Text(title, style: const TextStyle(fontSize: 18)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF1F1F1F),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          minimumSize: const Size(double.infinity, 75),
+          alignment: Alignment.centerLeft,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+    );
+  }
+}
