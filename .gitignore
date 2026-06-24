@@ -1,34 +1,23 @@
-# Gradle files
-.gradle/
-build/
+name: flipper_hacker_mobile
+description: Flipper Zero style mobile hacker toolkit for Android/iOS
+publish_to: 'none'
+version: 1.0.0+1
 
-# Local configuration file (sdk path, etc)
-local.properties
+environment:
+  sdk: '>=3.0.0 <4.0.0'
 
-# Log/OS Files
-*.log
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_blue_plus: ^2.3.9
+  nfc_manager: ^4.2.1
+  wifi_scan: ^0.4.1+2
+  permission_handler: ^11.3.1
+  google_fonts: ^6.2.0
 
-# Android Studio generated files and folders
-captures/
-.externalNativeBuild/
-.cxx/
-*.aab
-*.apk
-output-metadata.json
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 
-# IntelliJ
-*.iml
-.idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
-
-# Keystore files
-*.jks
-*.keystore
-
-# Google Services (e.g. APIs or Firebase)
-google-services.json
-
-# Android Profiling
-*.hprof
+flutter:
+  uses-material-design: true
